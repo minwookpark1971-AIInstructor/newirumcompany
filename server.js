@@ -520,6 +520,21 @@ app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), (re
     }
 });
 
+// Admin Login Endpoint
+app.post('/api/admin/login', (req, res) => {
+    const { username, password } = req.body;
+
+    // 환경 변수에서 관리자 계정 정보 확인
+    const adminUser = process.env.ADMIN_USERNAME || 'admin';
+    const adminPass = process.env.ADMIN_PASSWORD || 'admin1234';
+
+    if (username === adminUser && password === adminPass) {
+        res.json({ success: true });
+    } else {
+        res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+});
+
 // 서버 시작
 app.listen(PORT, () => {
     console.log(`\n🚀 서버가 시작되었습니다!`);

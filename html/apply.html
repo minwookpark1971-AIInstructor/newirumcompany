@@ -22,6 +22,8 @@
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/ui-lightness/jquery-ui.css">
 
+    <script src="../js/courses-data.js"></script>
+
     <!-- jQuery Validation -->
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 
@@ -251,7 +253,7 @@
     <div id="footer-container"></div>
 
     <!-- Scripts -->
-    <script src="../js/courses-data.js"></script>
+    <!-- <script src="../js/courses-data.js"></script> -->
     <script src="../js/components.js"></script>
     <script src="../js/main.js"></script>
     <script src="../js/animations.js"></script>
@@ -264,6 +266,13 @@
         let isConsultMode = false;
 
         $(document).ready(function () {
+            // COURSES_DATA 로드 확인
+            if (typeof COURSES_DATA === 'undefined') {
+                console.error('❌ 과정 데이터 로드 실패');
+                $('#course-selection-group').html('<p style="color: red;">과정 정보를 불러올 수 없습니다. 페이지를 새로고침해주세요.</p>');
+            } else {
+                console.log('✅ COURSES_DATA 정상 로드');
+            }
             // Load schedules from localStorage
             loadSchedules();
 
@@ -414,6 +423,14 @@
 
 
         function loadCourseSelection(preselectedSlug = null) {
+            // COURSES_DATA 존재 확인
+            if (typeof COURSES_DATA === 'undefined') {
+                console.error('❌ COURSES_DATA not loaded!');
+                setTimeout(() => loadCourseSelection(preselectedSlug), 100);
+                return;
+            }
+            console.log('✅ COURSES_DATA loaded:', COURSES_DATA.length, 'courses');
+
             // Load courses from both COURSES_DATA and registeredCourses
             let courses = typeof COURSES_DATA !== 'undefined' ? COURSES_DATA : [];
 
@@ -704,15 +721,22 @@
             const scheduleLabel = isConsultMode ? 'Zoom 상담 희망일정' : '희망 일정';
             const scheduleDisplayFinal = timeDisplay ? `${scheduleDisplay} ${timeDisplay}` : scheduleDisplay;
 
-            // Check if course has price
+            // Check if course has price (Hybrid logic)
             let coursePrice = 0;
             if (selectedCourse && !isInstructorMode) {
+                coursePrice = selectedCourse.price || 0;
+                // Override with localStorage if available
                 try {
                     const storedPrices = localStorage.getItem('coursePrices');
-                    const prices = storedPrices ? JSON.parse(storedPrices) : {};
-                    coursePrice = prices[selectedCourse.slug] || prices[selectedCourse.id] || 0;
+                    if (storedPrices) {
+                        const prices = JSON.parse(storedPrices);
+                        const customPrice = prices[selectedCourse.slug] || prices[selectedCourse.id];
+                        if (customPrice && customPrice > 0) {
+                            coursePrice = customPrice;
+                        }
+                    }
                 } catch (e) {
-                    console.error('Error loading course price:', e);
+                    console.error('Error loading custom price:', e);
                 }
             }
 
@@ -806,9 +830,20 @@
             }
 
             try {
+                // 1. 먼저 courses-data.js의 price 확인
+                let price = selectedCourse.price || 0;
+
+                // 2. localStorage의 커스텀 가격이 있으면 우선 적용
                 const storedPrices = localStorage.getItem('coursePrices');
-                const prices = storedPrices ? JSON.parse(storedPrices) : {};
-                const price = prices[selectedCourse.slug] || 0;
+                if (storedPrices) {
+                    const prices = JSON.parse(storedPrices);
+                    const customPrice = prices[selectedCourse.slug] || prices[selectedCourse.id];
+                    if (customPrice && customPrice > 0) {
+                        price = customPrice;
+                    }
+                }
+
+                console.log('💰 Course price:', selectedCourse.title, '=', price.toLocaleString('ko-KR'), '원');
 
                 if (price > 0) {
                     $('#course-price-amount').text(price.toLocaleString('ko-KR'));
@@ -825,9 +860,17 @@
         function updateSummary() {
             const $summary = $('#summary-content');
             if (selectedCourse) {
+                // 가격 가져오기 (courses-data.js 우선)
+                let price = selectedCourse.price || 0;
                 const storedPrices = localStorage.getItem('coursePrices');
-                const prices = storedPrices ? JSON.parse(storedPrices) : {};
-                const price = prices[selectedCourse.slug] || 0;
+                if (storedPrices) {
+                    const prices = JSON.parse(storedPrices);
+                    const customPrice = prices[selectedCourse.slug] || prices[selectedCourse.id];
+                    if (customPrice && customPrice > 0) {
+                        price = customPrice;
+                    }
+                }
+
                 const priceDisplay = price > 0 ? `
                     <div>
                         <label style="font-size: 0.75rem; color: var(--text-muted);">가격</label>
@@ -866,6 +909,7 @@
         }
 
         // 결제하기 버튼 클릭 핸들러 (이벤트 위임 사용)
+        // 결제하기 버튼 클릭 핸들러 (이벤트 위임 사용)
         $(document).on('click', '#payment-btn', async function (e) {
             e.preventDefault();
             e.stopPropagation();
@@ -876,38 +920,57 @@
                 alert('개인정보 처리방침에 동의해주세요');
                 return;
             }
-            amount: coursePrice,
-                userId: userId
-        })
+
+            const $btn = $(this);
+            $btn.prop('disabled', true).text('처리 중...');
+
+            try {
+                // Get course price (already updated to use selectedCourse.price)
+                let coursePrice = selectedCourse ? (selectedCourse.price || 0) : 0;
+
+                // Get user ID
+                const userId = localStorage.getItem('userId') || 'guest-' + Date.now();
+
+                const response = await fetch('/api/payments/create-order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        courseSlug: selectedCourse ? (selectedCourse.slug || selectedCourse.id) : '',
+                        courseTitle: selectedCourse ? selectedCourse.title : '',
+                        amount: coursePrice,
+                        userId: userId
+                    })
                 });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
-        const result = await response.json();
-        console.log('✅ [Payment] Order creation response:', result);
+                const result = await response.json();
+                console.log('✅ [Payment] Order creation response:', result);
 
-        if (result.ok) {
-            // Save order data to localStorage
-            localStorage.setItem('pendingOrder', JSON.stringify({
-                orderId: result.orderId,
-                amount: result.amount,
-                orderName: result.orderName
-            }));
+                if (result.ok) {
+                    // Save order data to localStorage
+                    localStorage.setItem('pendingOrder', JSON.stringify({
+                        orderId: result.orderId,
+                        amount: result.amount,
+                        orderName: result.orderName
+                    }));
 
-            console.log('✅ [Payment] Redirecting to checkout page');
-            // Redirect to checkout page
-            window.location.href = `pay/checkout.html?orderId=${result.orderId}&amount=${result.amount}&orderName=${encodeURIComponent(result.orderName)}`;
-        } else {
-            alert('주문 생성 중 오류가 발생했습니다: ' + (result.error || '알 수 없는 오류'));
-            $btn.prop('disabled', false).text('결제하기');
-        }
+                    console.log('✅ [Payment] Redirecting to checkout page');
+                    // Redirect to checkout page
+                    window.location.href = `pay/checkout.html?orderId=${result.orderId}&amount=${result.amount}&orderName=${encodeURIComponent(result.orderName)}`;
+                } else {
+                    alert('주문 생성 중 오류가 발생했습니다: ' + (result.error || '알 수 없는 오류'));
+                    $btn.prop('disabled', false).text('결제하기');
+                }
             } catch (error) {
-            console.error('❌ [Payment] Payment button error:', error);
-            alert('결제 페이지로 이동 중 오류가 발생했습니다: ' + (error.message || '알 수 없는 오류'));
-            $btn.prop('disabled', false).text('결제하기');
-        }
+                console.error('❌ [Payment] Payment button error:', error);
+                alert('결제 페이지로 이동 중 오류가 발생했습니다: ' + (error.message || '알 수 없는 오류'));
+                $btn.prop('disabled', false).text('결제하기');
+            }
         });
 
         function initApplyForm() {

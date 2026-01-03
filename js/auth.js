@@ -242,10 +242,13 @@ function handleLoginFallback(formData) {
         const inputPassword = formData.password.trim();
         const storedPassword = (user.password || '').trim();
 
-        if (storedPassword !== inputPassword) {
-            console.error('Password mismatch for:', searchEmail);
-            console.log('Input password length:', inputPassword.length);
-            console.log('Stored password length:', storedPassword.length);
+        // 입력된 비밀번호를 해시화
+        const hashedInputPassword = CryptoJS.SHA256(inputPassword).toString();
+
+        // 해시 비교 (기존 평문 비밀번호 호환성을 위해 평문 비교도 시도할 수 있지만, 보안상 해시된 값만 비교)
+        // 만약 기존 사용자가 로그인 실패하면 비밀번호 재설정을 유도하거나 재가입해야 함
+        if (storedPassword !== hashedInputPassword) {
+            console.error('Password mismatch');
             showError('비밀번호가 올바르지 않습니다.');
             if ($submitBtn) {
                 $submitBtn.prop('disabled', false).text('로그인');
@@ -315,13 +318,16 @@ function handleSignupFallback(formData) {
     const $submitBtn = $form ? $form.find('button[type="submit"]') : null;
 
     try {
+        // 비밀번호 해시화 (SHA-256)
+        const hashedPassword = CryptoJS.SHA256(formData.password).toString();
+
         // Store user data in localStorage for admin viewing
         const userData = {
             id: Date.now().toString(),
             name: formData.name || '',
             phone: formData.phone || '',
             email: formData.email,
-            password: formData.password, // 비밀번호 저장 (실제 환경에서는 해시화 필요)
+            password: hashedPassword, // 해시된 비밀번호 저장
             registeredAt: new Date().toISOString(),
             status: 'active',
             authMethod: 'normal'
