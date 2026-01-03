@@ -96,7 +96,10 @@ function generateFooter() {
     const currentYear = new Date().getFullYear();
 
     const normalizedHref = window.location.href.replace(/\\/g, '/');
-    const isCourseDetail = normalizedHref.includes('/html/courses/') || normalizedHref.includes('/courses/');
+    const isCourseDetail = normalizedHref.includes('/html/courses/') ||
+        normalizedHref.includes('/courses/') ||
+        normalizedHref.includes('course-detail') ||
+        normalizedHref.includes('slug=');
 
     return `
 <footer class="main-footer">
