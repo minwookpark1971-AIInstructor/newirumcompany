@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제 실패 | Irum Academy</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/animations.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <style>
+        .fail-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+        }
+        .fail-icon {
+            font-size: 4rem;
+            color: #ef4444;
+            margin-bottom: 1rem;
+        }
+        .error-info {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-container"></div>
+
+    <!-- Main Content -->
+    <main class="main-content" style="padding-top: 120px; padding-bottom: 4rem;">
+        <div class="fail-container">
+            <div class="fail-icon">✗</div>
+            <h1 style="margin-bottom: 1rem;">결제에 실패했습니다</h1>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                결제 처리 중 문제가 발생했습니다.
+            </p>
+
+            <!-- Error Info -->
+            <div class="error-info" id="error-info">
+                <!-- Will be populated by JavaScript -->
+            </div>
+
+            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;">
+                <button onclick="retryPayment()" class="btn btn-primary">다시 시도</button>
+                <a href="../../html/apply.html" class="btn btn-outline">신청 페이지로</a>
+                <a href="../../html/index.html" class="btn btn-outline">홈으로 가기</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-container"></div>
+
+    <!-- Scripts -->
+    <script src="../../js/components.js"></script>
+    <script src="../../js/main.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const message = urlParams.get('message');
+            const orderId = urlParams.get('orderId');
+
+            let errorMessage = '결제 처리 중 오류가 발생했습니다.';
+            if (message) {
+                errorMessage = decodeURIComponent(message);
+            } else if (code) {
+                errorMessage = `오류 코드: ${code}`;
+            }
+
+            $('#error-info').html(`
+                <h3 style="margin-bottom: 1rem; color: #dc2626;">오류 정보</h3>
+                <p style="margin-bottom: 0.5rem;"><strong>오류 메시지:</strong></p>
+                <p style="margin-bottom: 1rem;">${errorMessage}</p>
+                ${orderId ? `<p style="font-size: 0.875rem; color: var(--text-muted);">주문번호: ${orderId}</p>` : ''}
+            `);
+        });
+
+        function retryPayment() {
+            // Get order data from localStorage
+            const orderData = localStorage.getItem('pendingOrder');
+            if (orderData) {
+                const order = JSON.parse(orderData);
+                window.location.href = `checkout.html?orderId=${order.orderId}&amount=${order.amount}&orderName=${encodeURIComponent(order.orderName)}`;
+            } else {
+                window.location.href = '../../html/apply.html';
+            }
+        }
+    </script>
+</body>
+</html>
+

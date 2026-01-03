@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 데이터 디버깅</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .debug-section {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+        }
+        .debug-section h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            overflow-x: auto;
+        }
+        button {
+            padding: 0.5rem 1rem;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .error {
+            color: #dc3545;
+        }
+        .success {
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <h1>회원 데이터 디버깅 도구</h1>
+    
+    <div class="debug-section">
+        <h2>1. localStorage에서 users 데이터 확인</h2>
+        <button onclick="checkUsers()">users 데이터 확인</button>
+        <div id="users-result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>2. 특정 이메일 검색 (irum.ceo@gmail.com)</h2>
+        <button onclick="findUser()">이메일로 검색</button>
+        <div id="find-result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>3. users 데이터 수동 추가 (테스트용)</h2>
+        <button onclick="addTestUser()">테스트 회원 추가</button>
+        <div id="add-result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>4. 모든 localStorage 키 확인</h2>
+        <button onclick="listAllKeys()">모든 키 확인</button>
+        <div id="keys-result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>5. users 데이터 수정 (irum.ceo@gmail.com)</h2>
+        <button onclick="fixUser()">데이터 수정/추가</button>
+        <div id="fix-result"></div>
+    </div>
+
+    <script>
+        function checkUsers() {
+            try {
+                const stored = localStorage.getItem('users');
+                const resultDiv = document.getElementById('users-result');
+                
+                if (!stored) {
+                    resultDiv.innerHTML = '<p class="error">❌ users 데이터가 localStorage에 없습니다.</p>';
+                    return;
+                }
+                
+                const users = JSON.parse(stored);
+                resultDiv.innerHTML = `
+                    <p class="success">✅ users 데이터를 찾았습니다.</p>
+                    <p><strong>총 회원 수:</strong> ${users.length}</p>
+                    <pre>${JSON.stringify(users, null, 2)}</pre>
+                `;
+            } catch (e) {
+                document.getElementById('users-result').innerHTML = 
+                    `<p class="error">❌ 오류: ${e.message}</p>`;
+            }
+        }
+        
+        function findUser() {
+            try {
+                const stored = localStorage.getItem('users');
+                const resultDiv = document.getElementById('find-result');
+                
+                if (!stored) {
+                    resultDiv.innerHTML = '<p class="error">❌ users 데이터가 localStorage에 없습니다.</p>';
+                    return;
+                }
+                
+                const users = JSON.parse(stored);
+                const targetEmail = 'irum.ceo@gmail.com';
+                const foundUser = users.find(u => u && u.email === targetEmail);
+                
+                if (foundUser) {
+                    resultDiv.innerHTML = `
+                        <p class="success">✅ 사용자를 찾았습니다!</p>
+                        <pre>${JSON.stringify(foundUser, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <p class="error">❌ ${targetEmail} 사용자를 찾을 수 없습니다.</p>
+                        <p>전체 회원 목록:</p>
+                        <pre>${JSON.stringify(users.map(u => ({ email: u.email, name: u.name, id: u.id })), null, 2)}</pre>
+                    `;
+                }
+            } catch (e) {
+                document.getElementById('find-result').innerHTML = 
+                    `<p class="error">❌ 오류: ${e.message}</p>`;
+            }
+        }
+        
+        function addTestUser() {
+            try {
+                let users = [];
+                const stored = localStorage.getItem('users');
+                if (stored) {
+                    users = JSON.parse(stored);
+                }
+                
+                const testUser = {
+                    id: Date.now().toString(),
+                    name: '테스트 사용자',
+                    phone: '010-1234-5678',
+                    email: 'test@example.com',
+                    registeredAt: new Date().toISOString(),
+                    status: 'active',
+                    authMethod: 'normal'
+                };
+                
+                // 이미 존재하는지 확인
+                const exists = users.find(u => u.email === testUser.email);
+                if (exists) {
+                    document.getElementById('add-result').innerHTML = 
+                        '<p class="error">❌ 이미 존재하는 이메일입니다.</p>';
+                    return;
+                }
+                
+                users.push(testUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                document.getElementById('add-result').innerHTML = `
+                    <p class="success">✅ 테스트 회원이 추가되었습니다.</p>
+                    <pre>${JSON.stringify(testUser, null, 2)}</pre>
+                `;
+            } catch (e) {
+                document.getElementById('add-result').innerHTML = 
+                    `<p class="error">❌ 오류: ${e.message}</p>`;
+            }
+        }
+        
+        function listAllKeys() {
+            try {
+                const keys = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    keys.push(key);
+                }
+                
+                const resultDiv = document.getElementById('keys-result');
+                resultDiv.innerHTML = `
+                    <p><strong>총 키 개수:</strong> ${keys.length}</p>
+                    <ul>
+                        ${keys.map(key => `<li><strong>${key}:</strong> ${localStorage.getItem(key).substring(0, 100)}...</li>`).join('')}
+                    </ul>
+                `;
+            } catch (e) {
+                document.getElementById('keys-result').innerHTML = 
+                    `<p class="error">❌ 오류: ${e.message}</p>`;
+            }
+        }
+        
+        function fixUser() {
+            try {
+                let users = [];
+                const stored = localStorage.getItem('users');
+                if (stored) {
+                    users = JSON.parse(stored);
+                }
+                
+                const targetEmail = 'irum.ceo@gmail.com';
+                const existingIndex = users.findIndex(u => u && u.email === targetEmail);
+                
+                const resultDiv = document.getElementById('fix-result');
+                
+                if (existingIndex >= 0) {
+                    // 기존 사용자 수정
+                    const user = users[existingIndex];
+                    if (!user.registeredAt && user.id) {
+                        const timestamp = parseInt(user.id);
+                        if (!isNaN(timestamp) && timestamp > 1000000000000) {
+                            user.registeredAt = new Date(timestamp).toISOString();
+                        } else {
+                            user.registeredAt = new Date().toISOString();
+                        }
+                    }
+                    if (!user.status) {
+                        user.status = 'active';
+                    }
+                    if (!user.authMethod) {
+                        user.authMethod = 'normal';
+                    }
+                    
+                    users[existingIndex] = user;
+                    localStorage.setItem('users', JSON.stringify(users));
+                    
+                    resultDiv.innerHTML = `
+                        <p class="success">✅ 사용자 데이터가 수정되었습니다.</p>
+                        <pre>${JSON.stringify(user, null, 2)}</pre>
+                    `;
+                } else {
+                    // 새 사용자 추가
+                    const newUser = {
+                        id: Date.now().toString(),
+                        name: '이룸 CEO',
+                        phone: '',
+                        email: targetEmail,
+                        registeredAt: new Date().toISOString(),
+                        status: 'active',
+                        authMethod: 'normal'
+                    };
+                    
+                    users.push(newUser);
+                    localStorage.setItem('users', JSON.stringify(users));
+                    
+                    resultDiv.innerHTML = `
+                        <p class="success">✅ 새 사용자가 추가되었습니다.</p>
+                        <pre>${JSON.stringify(newUser, null, 2)}</pre>
+                    `;
+                }
+            } catch (e) {
+                document.getElementById('fix-result').innerHTML = 
+                    `<p class="error">❌ 오류: ${e.message}</p>`;
+            }
+        }
+        
+        // 페이지 로드 시 자동으로 확인
+        window.onload = function() {
+            checkUsers();
+        };
+    </script>
+</body>
+</html>
+

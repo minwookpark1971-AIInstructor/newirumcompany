@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제 성공 | Irum Academy</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/animations.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <style>
+        .success-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+        }
+        .success-icon {
+            font-size: 4rem;
+            color: #10b981;
+            margin-bottom: 1rem;
+        }
+        .payment-info {
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-container"></div>
+
+    <!-- Main Content -->
+    <main class="main-content" style="padding-top: 120px; padding-bottom: 4rem;">
+        <div class="success-container">
+            <div class="success-icon">✓</div>
+            <h1 style="margin-bottom: 1rem;">결제가 완료되었습니다</h1>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                신청이 성공적으로 접수되었습니다.
+            </p>
+
+            <!-- Payment Info -->
+            <div class="payment-info" id="payment-info">
+                <div class="loading">
+                    <p>결제 정보를 확인하는 중...</p>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+                <a href="../../html/index.html" class="btn btn-primary">홈으로 가기</a>
+                <a href="../../html/courses.html" class="btn btn-outline">강의 목록</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-container"></div>
+
+    <!-- Scripts -->
+    <script src="../../js/components.js"></script>
+    <script src="../../js/main.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const paymentKey = urlParams.get('paymentKey');
+            const orderId = urlParams.get('orderId');
+            const amount = urlParams.get('amount');
+
+            if (!paymentKey || !orderId || !amount) {
+                $('#payment-info').html(`
+                    <p style="color: #ef4444;">결제 정보가 올바르지 않습니다.</p>
+                `);
+                return;
+            }
+
+            // Confirm payment
+            confirmPayment(paymentKey, orderId, amount);
+        });
+
+        async function confirmPayment(paymentKey, orderId, amount) {
+            try {
+                const response = await fetch('/api/payments/confirm', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        paymentKey: paymentKey,
+                        orderId: orderId,
+                        amount: parseInt(amount)
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.ok) {
+                    displayPaymentInfo(result.order);
+                    // Clear pending order from localStorage
+                    localStorage.removeItem('pendingOrder');
+                } else {
+                    $('#payment-info').html(`
+                        <p style="color: #ef4444;">결제 승인 중 오류가 발생했습니다: ${result.error || '알 수 없는 오류'}</p>
+                    `);
+                }
+            } catch (error) {
+                console.error('Payment confirmation error:', error);
+                $('#payment-info').html(`
+                    <p style="color: #ef4444;">결제 승인 중 오류가 발생했습니다.</p>
+                `);
+            }
+        }
+
+        function displayPaymentInfo(order) {
+            const date = new Date(order.createdAt);
+            const dateStr = date.toLocaleDateString('ko-KR') + ' ' + 
+                           date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+
+            $('#payment-info').html(`
+                <h3 style="margin-bottom: 1rem;">결제 정보</h3>
+                <div class="info-item">
+                    <span>주문번호</span>
+                    <span>${order.id}</span>
+                </div>
+                <div class="info-item">
+                    <span>주문명</span>
+                    <span>${order.orderName || '강의 신청'}</span>
+                </div>
+                <div class="info-item">
+                    <span>결제금액</span>
+                    <span style="font-weight: 600;">${order.amount.toLocaleString('ko-KR')}원</span>
+                </div>
+                <div class="info-item">
+                    <span>결제수단</span>
+                    <span>${order.method || '카드'}</span>
+                </div>
+                <div class="info-item">
+                    <span>결제일시</span>
+                    <span>${dateStr}</span>
+                </div>
+            `);
+        }
+    </script>
+</body>
+</html>
+
