@@ -19,7 +19,7 @@ function generateHeader() {
     const pathInfo = getPathInfo();
     const loggedIn = isLoggedIn();
     const userEmail = getUserEmail();
-    
+
     // 로그인 상태에 따른 버튼 HTML 생성
     let desktopActions, mobileActions;
     if (loggedIn) {
@@ -45,7 +45,7 @@ function generateHeader() {
                 <a href="${pathInfo.signupUrl}" class="btn btn-primary btn-sm btn-block">회원가입</a>
             </div>`;
     }
-    
+
     return `
 <header class="main-header" id="main-header">
     <div class="container">
@@ -94,11 +94,16 @@ function generateHeader() {
 function generateFooter() {
     const pathInfo = getPathInfo();
     const currentYear = new Date().getFullYear();
-    
+
+    const normalizedHref = window.location.href.replace(/\\/g, '/');
+    const isCourseDetail = normalizedHref.includes('/html/courses/') || normalizedHref.includes('/courses/');
+
     return `
 <footer class="main-footer">
     <div class="container">
         <!-- CTA Section -->
+        <!-- CTA Section -->
+        ${!isCourseDetail ? `
         <div class="footer-cta">
             <h3 class="footer-cta-title">지금 바로 시작하세요</h3>
             <p class="footer-cta-description">
@@ -109,6 +114,7 @@ function generateFooter() {
                 <a href="${pathInfo.coursesUrl}" class="btn btn-outline btn-lg">강의코스 보기</a>
             </div>
         </div>
+        ` : ''}
 
         <!-- Bottom Section -->
         <div class="footer-bottom">
@@ -142,33 +148,33 @@ function getPathInfo() {
     const href = window.location.href;
     const pathname = window.location.pathname;
     const filename = pathname.split('/').pop() || 'index.html';
-    
+
     // Normalize path separators for Windows
     const normalizedHref = href.replace(/\\/g, '/');
     const normalizedPathname = pathname.replace(/\\/g, '/');
-    
+
     // Extract directory path
     const pathParts = normalizedPathname.split('/').filter(p => p);
     const htmlIndex = pathParts.indexOf('html');
-    
+
     // Check if we're in root directory (index.html at root)
     const isRoot = (filename === 'index.html' && htmlIndex === -1) ||
-                   (normalizedHref.endsWith('index.html') && htmlIndex === -1) ||
-                   (normalizedPathname === '/' || normalizedPathname.endsWith('/')) ||
-                   (normalizedHref.includes('file://') && htmlIndex === -1 && filename === 'index.html');
-    
+        (normalizedHref.endsWith('index.html') && htmlIndex === -1) ||
+        (normalizedPathname === '/' || normalizedPathname.endsWith('/')) ||
+        (normalizedHref.includes('file://') && htmlIndex === -1 && filename === 'index.html');
+
     // Check if we're in html folder
     const isInHtmlFolder = htmlIndex !== -1 && htmlIndex === pathParts.length - 2;
-    
+
     // Check if we're in html subfolder (like html/auth/ or html/courses/)
     const isInHtmlSubfolder = htmlIndex !== -1 && htmlIndex < pathParts.length - 2;
-    
+
     // Check if we're in auth folder
     const isInAuth = pathParts.includes('auth');
-    
+
     // Determine relative paths based on current location
     let homeUrl, coursesUrl, instructorUrl, applyUrl, communityUrl, inquiryUrl, loginUrl, signupUrl, logoUrl, privacyUrl, termsUrl;
-    
+
     if (isRoot) {
         // From root: html files are in html/ folder
         homeUrl = 'index.html';
@@ -237,7 +243,7 @@ function getPathInfo() {
         privacyUrl = 'privacy.html';
         termsUrl = 'terms.html';
     }
-    
+
     return {
         homeUrl: homeUrl,
         coursesUrl: coursesUrl,
@@ -259,7 +265,7 @@ function updateHeaderLoginStatus() {
     if ($headerContainer.length) {
         $headerContainer.html(generateHeader());
         // Initialize header after a short delay to ensure DOM is ready
-        setTimeout(function() {
+        setTimeout(function () {
             if (typeof initHeader === 'function') {
                 initHeader();
             }
@@ -273,13 +279,13 @@ function updateHeaderLoginStatus() {
 function bindLogoutButtons() {
     // 로그아웃 함수가 있는지 확인
     if (typeof logout === 'function') {
-        $('#logout-btn-header, #logout-btn-mobile').on('click', function(e) {
+        $('#logout-btn-header, #logout-btn-mobile').on('click', function (e) {
             e.preventDefault();
             logout();
         });
     } else {
         // auth.js가 로드되지 않은 경우 직접 처리
-        $('#logout-btn-header, #logout-btn-mobile').on('click', function(e) {
+        $('#logout-btn-header, #logout-btn-mobile').on('click', function (e) {
             e.preventDefault();
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('userEmail');
@@ -303,11 +309,11 @@ function bindLogoutButtons() {
 function loadComponents() {
     const $headerContainer = $('#header-container');
     const $footerContainer = $('#footer-container');
-    
+
     if ($headerContainer.length) {
         $headerContainer.html(generateHeader());
         // Initialize header after a short delay to ensure DOM is ready
-        setTimeout(function() {
+        setTimeout(function () {
             if (typeof initHeader === 'function') {
                 initHeader();
             }
@@ -315,14 +321,14 @@ function loadComponents() {
             bindLogoutButtons();
         }, 100);
     }
-    
+
     if ($footerContainer.length) {
         $footerContainer.html(generateFooter());
     }
 }
 
 // Auto-load on document ready
-$(document).ready(function() {
+$(document).ready(function () {
     loadComponents();
 });
 
