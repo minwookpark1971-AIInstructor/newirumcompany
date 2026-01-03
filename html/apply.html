@@ -813,12 +813,14 @@
             if (coursePrice > 0) {
                 $('#payment-btn').show().prop('disabled', false);
                 $('#submit-btn').text('신청만 하기');
+                $('#payment-info').html('<p style="font-size: 0.875rem; color: var(--text-muted); margin: 0;">💳 가격이 있는 과정은 결제하기 버튼을 통해 결제 후 신청이 완료됩니다.</p>');
                 $('#payment-info').show();
                 console.log('✅ [generateConfirmation] Payment button shown');
             } else {
                 $('#payment-btn').hide();
                 $('#submit-btn').text('신청 제출');
-                $('#payment-info').hide();
+                $('#payment-info').html('<p style="color: #ef4444; font-size: 0.875rem; margin: 0;">⚠️ 과정 가격이 0원입니다. 유료 과정인 경우 관리자에게 문의하세요.</p>');
+                $('#payment-info').show();
                 console.log('ℹ️ [generateConfirmation] Payment button hidden (no price)');
             }
         }
@@ -845,8 +847,25 @@
 
                 console.log('💰 Course price:', selectedCourse.title, '=', price.toLocaleString('ko-KR'), '원');
 
+                const $amountDisplay = $('#course-price-amount');
+                const $unitDisplay = $amountDisplay.next('span'); // "원"
+                const $container = $('#course-price-group > div');
+
                 if (price > 0) {
-                    $('#course-price-amount').text(price.toLocaleString('ko-KR'));
+                    $amountDisplay.text(price.toLocaleString('ko-KR')).css('color', 'var(--primary)');
+                    $unitDisplay.show();
+                    $('#course-price-warning').remove();
+                    $('#course-price-group').show();
+                } else if (!isInstructorMode && !isConsultMode) {
+                    // Price is 0 for a regular course
+                    $amountDisplay.text('0').css('color', '#ef4444'); // Red 0
+                    $unitDisplay.show();
+
+                    if ($('#course-price-warning').length === 0) {
+                        $container.append('<p id="course-price-warning" style="color: #ef4444; font-size: 0.875rem; margin-top: 0.5rem; font-weight: 500;">⚠️ 가격이 설정되지 않았습니다. 관리자 페이지에서 가격을 설정해주세요.</p>');
+                    } else {
+                        $('#course-price-warning').show();
+                    }
                     $('#course-price-group').show();
                 } else {
                     $('#course-price-group').hide();
@@ -945,10 +964,11 @@
                     }
                 }
 
-                if (coursePrice === 0) {
-                    console.warn('⚠️ Course price is 0. Using default minimum for testing if needed, or alerting.');
-                    // Optional: Alert user or handle free course logic?
-                    // For now, let it proceed, but check output.
+                if (coursePrice <= 0) {
+                    console.error('❌ [Payment] Price is 0, blocking payment.');
+                    alert('결제 금액 오류: 과정의 가격이 설정되지 않았습니다 (0원). 관리자 페이지에서 가격을 설정해주세요.');
+                    $btn.prop('disabled', false).text('결제하기');
+                    return;
                 }
 
                 // Mock API Call for GitHub Pages (Static Site)
