@@ -925,11 +925,8 @@
             $btn.prop('disabled', true).text('처리 중...');
 
             try {
-                // Get course price (already updated to use selectedCourse.price)
+                // Get course price
                 let coursePrice = selectedCourse ? (selectedCourse.price || 0) : 0;
-
-                // Get user ID
-                const userId = localStorage.getItem('userId') || 'guest-' + Date.now();
 
                 // Mock API Call for GitHub Pages (Static Site)
                 console.log('⚠️ [Payment] Running in static mode, mocking API call');
@@ -939,43 +936,29 @@
 
                 const mockOrderId = 'ord_' + Date.now() + Math.random().toString(36).substr(2, 9);
 
-                // Mock response
-                const response = {
+                // Direct Mock Result
+                const result = {
                     ok: true,
-                    status: 200,
-                    json: async () => ({
-                        ok: true,
-                        orderId: mockOrderId,
-                        amount: coursePrice,
-                        orderName: selectedCourse ? selectedCourse.title : '수강신청 결제'
-                    })
+                    orderId: mockOrderId,
+                    amount: coursePrice,
+                    orderName: selectedCourse ? selectedCourse.title : '수강신청 결제'
                 };
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                console.log('✅ [Payment] Order creation success:', result);
 
-                const result = await response.json();
-                console.log('✅ [Payment] Order creation response:', result);
+                // Save order data to localStorage
+                localStorage.setItem('pendingOrder', JSON.stringify({
+                    orderId: result.orderId,
+                    amount: result.amount,
+                    orderName: result.orderName
+                }));
 
-                if (result.ok) {
-                    // Save order data to localStorage
-                    localStorage.setItem('pendingOrder', JSON.stringify({
-                        orderId: result.orderId,
-                        amount: result.amount,
-                        orderName: result.orderName
-                    }));
+                console.log('✅ [Payment] Redirecting to checkout page');
+                window.location.href = `pay/checkout.html?orderId=${result.orderId}&amount=${result.amount}&orderName=${encodeURIComponent(result.orderName)}`;
 
-                    console.log('✅ [Payment] Redirecting to checkout page');
-                    // Redirect to checkout page
-                    window.location.href = `pay/checkout.html?orderId=${result.orderId}&amount=${result.amount}&orderName=${encodeURIComponent(result.orderName)}`;
-                } else {
-                    alert('주문 생성 중 오류가 발생했습니다: ' + (result.error || '알 수 없는 오류'));
-                    $btn.prop('disabled', false).text('결제하기');
-                }
             } catch (error) {
                 console.error('❌ [Payment] Payment button error:', error);
-                alert('결제 페이지로 이동 중 오류가 발생했습니다: ' + (error.message || '알 수 없는 오류'));
+                alert('이동 중 오류가 발생했습니다. (Static Mode)');
                 $btn.prop('disabled', false).text('결제하기');
             }
         });
