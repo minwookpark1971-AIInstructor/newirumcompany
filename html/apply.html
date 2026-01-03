@@ -928,6 +928,29 @@
                 // Get course price
                 let coursePrice = selectedCourse ? (selectedCourse.price || 0) : 0;
 
+                // Override with localStorage if available (same logic as generateConfirmation)
+                if (selectedCourse) {
+                    try {
+                        const storedPrices = localStorage.getItem('coursePrices');
+                        if (storedPrices) {
+                            const prices = JSON.parse(storedPrices);
+                            const customPrice = prices[selectedCourse.slug] || prices[selectedCourse.id];
+                            if (customPrice && customPrice > 0) {
+                                coursePrice = customPrice;
+                                console.log('✅ Applied custom price:', coursePrice);
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Error loading custom price:', e);
+                    }
+                }
+
+                if (coursePrice === 0) {
+                    console.warn('⚠️ Course price is 0. Using default minimum for testing if needed, or alerting.');
+                    // Optional: Alert user or handle free course logic?
+                    // For now, let it proceed, but check output.
+                }
+
                 // Mock API Call for GitHub Pages (Static Site)
                 console.log('⚠️ [Payment] Running in static mode, mocking API call');
 
