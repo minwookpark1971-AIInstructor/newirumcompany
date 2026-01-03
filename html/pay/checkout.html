@@ -182,10 +182,18 @@
 
         async function initializePayment() {
             try {
-                // Get client key from server
-                const keyResponse = await fetch('/api/payments/client-key');
-                const keyData = await keyResponse.json();
-                const clientKey = keyData.clientKey || 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq';
+                // Get client key from server (Mock for Static Site)
+                let clientKey = 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq'; // Default test key
+
+                try {
+                    const keyResponse = await fetch('/api/payments/client-key');
+                    if (keyResponse.ok) {
+                        const keyData = await keyResponse.json();
+                        if (keyData.clientKey) clientKey = keyData.clientKey;
+                    }
+                } catch (e) {
+                    console.warn('⚠️ [Checkout] Failed to fetch client key, using default test key');
+                }
 
                 if (!clientKey || clientKey === '') {
                     throw new Error('클라이언트 키를 가져올 수 없습니다.');

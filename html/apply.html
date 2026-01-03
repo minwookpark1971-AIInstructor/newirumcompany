@@ -931,18 +931,25 @@
                 // Get user ID
                 const userId = localStorage.getItem('userId') || 'guest-' + Date.now();
 
-                const response = await fetch('/api/payments/create-order', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        courseSlug: selectedCourse ? (selectedCourse.slug || selectedCourse.id) : '',
-                        courseTitle: selectedCourse ? selectedCourse.title : '',
+                // Mock API Call for GitHub Pages (Static Site)
+                console.log('⚠️ [Payment] Running in static mode, mocking API call');
+
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 800));
+
+                const mockOrderId = 'ord_' + Date.now() + Math.random().toString(36).substr(2, 9);
+
+                // Mock response
+                const response = {
+                    ok: true,
+                    status: 200,
+                    json: async () => ({
+                        ok: true,
+                        orderId: mockOrderId,
                         amount: coursePrice,
-                        userId: userId
+                        orderName: selectedCourse ? selectedCourse.title : '수강신청 결제'
                     })
-                });
+                };
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -1041,6 +1048,16 @@
                     console.error('Error saving application:', e);
                 }
 
+                // Mock API Call for GitHub Pages
+                console.log('⚠️ [Apply] Running in static mode, mocking API call');
+
+                setTimeout(function () {
+                    console.log('✅ [Apply] Mock submission successful');
+                    $('#success-modal').addClass('active');
+                    $submitBtn.prop('disabled', false).text('신청 제출');
+                }, 1000);
+
+                /*
                 $.ajax({
                     url: '/api/apply', // Replace with your API endpoint
                     method: 'POST',
@@ -1061,6 +1078,7 @@
                         $('#success-modal').addClass('active');
                     }
                 });
+                */
             });
         }
     </script>
