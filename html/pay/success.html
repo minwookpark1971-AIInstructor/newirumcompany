@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>결제 성공 | Irum Academy</title>
-    
+
     <!-- CSS -->
     <link rel="stylesheet" href="../../css/main.css">
     <link rel="stylesheet" href="../../css/animations.css">
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    
+
     <style>
         .success-container {
             max-width: 600px;
@@ -24,11 +26,13 @@
             padding: 2rem;
             text-align: center;
         }
+
         .success-icon {
             font-size: 4rem;
             color: #10b981;
             margin-bottom: 1rem;
         }
+
         .payment-info {
             background: #f9fafb;
             border-radius: 0.5rem;
@@ -36,17 +40,20 @@
             margin: 2rem 0;
             text-align: left;
         }
+
         .info-item {
             display: flex;
             justify-content: space-between;
             padding: 0.75rem 0;
             border-bottom: 1px solid #e5e7eb;
         }
+
         .info-item:last-child {
             border-bottom: none;
         }
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <div id="header-container"></div>
@@ -80,9 +87,9 @@
     <!-- Scripts -->
     <script src="../../js/components.js"></script>
     <script src="../../js/main.js"></script>
-    
+
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             const urlParams = new URLSearchParams(window.location.search);
             const paymentKey = urlParams.get('paymentKey');
             const orderId = urlParams.get('orderId');
@@ -101,19 +108,34 @@
 
         async function confirmPayment(paymentKey, orderId, amount) {
             try {
-                const response = await fetch('/api/payments/confirm', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        paymentKey: paymentKey,
-                        orderId: orderId,
-                        amount: parseInt(amount)
-                    })
-                });
+                console.log('⚠️ [Success] Running in static mode, mocking API call');
 
-                const result = await response.json();
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                // Get pending order info for better mock data
+                let orderName = '강의 신청';
+                try {
+                    const pendingOrder = localStorage.getItem('pendingOrder');
+                    if (pendingOrder) {
+                        const order = JSON.parse(pendingOrder);
+                        if (order.orderName) orderName = order.orderName;
+                    }
+                } catch (e) {
+                    console.error('Error reading pending order:', e);
+                }
+
+                // Mock Result
+                const result = {
+                    ok: true,
+                    order: {
+                        id: orderId,
+                        orderName: orderName,
+                        amount: parseInt(amount),
+                        method: '카드/간편결제 (Test)',
+                        createdAt: new Date().toISOString()
+                    }
+                };
 
                 if (result.ok) {
                     displayPaymentInfo(result.order);
@@ -134,8 +156,8 @@
 
         function displayPaymentInfo(order) {
             const date = new Date(order.createdAt);
-            const dateStr = date.toLocaleDateString('ko-KR') + ' ' + 
-                           date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = date.toLocaleDateString('ko-KR') + ' ' +
+                date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
 
             $('#payment-info').html(`
                 <h3 style="margin-bottom: 1rem;">결제 정보</h3>
@@ -163,5 +185,5 @@
         }
     </script>
 </body>
-</html>
 
+</html>

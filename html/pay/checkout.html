@@ -219,17 +219,28 @@
                 // Initialize Toss Payments Widget
                 paymentWidget = PaymentWidget(clientKey, customerKey);
 
-                // Render payment methods
-                await paymentWidget.renderPaymentMethods('#payment-widget', amount);
+                // Clear loading message
+                $('#payment-widget').empty();
 
-                // Enable payment button
-                $('#payment-button').prop('disabled', false).text('결제하기');
+                // Render payment methods and wait for readiness
+                const paymentMethodWidget = paymentWidget.renderPaymentMethods(
+                    '#payment-widget',
+                    amount,
+                    { variantKey: 'DEFAULT' } // Optional: Explicit variant
+                );
+
+                // Ensure button is enabled only when UI is ready
+                paymentMethodWidget.on('ready', function () {
+                    console.log('✅ [Checkout] Payment Widget Ready');
+                    $('#payment-button').prop('disabled', false).text('결제하기');
+                });
 
             } catch (error) {
                 console.error('Payment initialization error:', error);
                 $('#payment-widget').html(`
                     <div class="card" style="padding: 2rem; text-align: center;">
                         <p style="color: #ef4444;">결제 시스템 초기화 중 오류가 발생했습니다.</p>
+                        <p style="font-size: 0.875rem; color: var(--text-muted);">${error.message}</p>
                         <button class="btn btn-outline" onclick="location.reload()">다시 시도</button>
                     </div>
                 `);
