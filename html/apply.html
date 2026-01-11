@@ -423,35 +423,48 @@
 
 
         function loadCourseSelection(preselectedSlug = null) {
-            // COURSES_DATA 존재 확인
-            if (typeof COURSES_DATA === 'undefined') {
-                console.error('❌ COURSES_DATA not loaded!');
-                setTimeout(() => loadCourseSelection(preselectedSlug), 100);
-                return;
-            }
-            console.log('✅ COURSES_DATA loaded:', COURSES_DATA.length, 'courses');
+            // Initialize courses array safely
+            let courses = [];
 
-            // Load courses from both COURSES_DATA and registeredCourses
-            let courses = typeof COURSES_DATA !== 'undefined' ? COURSES_DATA : [];
+            // Try to load embedded data
+            if (typeof COURSES_DATA !== 'undefined' && Array.isArray(COURSES_DATA)) {
+                console.log('✅ [loadCourseSelection] COURSES_DATA loaded:', COURSES_DATA.length, 'courses');
+                courses = [...COURSES_DATA];
+            } else {
+                console.warn('⚠️ [loadCourseSelection] COURSES_DATA not loaded or invalid. Using empty array for static courses.');
+            }
 
             // Load registered courses from localStorage
             try {
                 const storedCourses = localStorage.getItem('registeredCourses');
                 if (storedCourses) {
                     const registeredCourses = JSON.parse(storedCourses);
-                    courses = [...courses, ...registeredCourses];
+                    if (Array.isArray(registeredCourses)) {
+                        console.log('✅ [loadCourseSelection] Loaded', registeredCourses.length, 'registered courses from localStorage');
+                        courses = [...courses, ...registeredCourses];
+                    } else {
+                        console.warn('⚠️ [loadCourseSelection] registeredCourses in localStorage is not an array');
+                    }
+                } else {
+                    console.log('ℹ️ [loadCourseSelection] No registeredCourses found in localStorage');
                 }
             } catch (e) {
-                console.error('Error loading registered courses:', e);
+                console.error('❌ [loadCourseSelection] Error loading registered courses:', e);
             }
 
             if (courses.length === 0) {
+                console.log('ℹ️ [loadCourseSelection] No courses available. Attempting fallback AJAX load.');
                 // Fallback: try AJAX
                 $.getJSON('../data/courses.json', function (ajaxCourses) {
+                    console.log('✅ [loadCourseSelection] AJAX load success');
                     renderCourseSelect(ajaxCourses, preselectedSlug);
+                }).fail(function () {
+                    console.error('❌ [loadCourseSelection] AJAX load failed');
+                    // Still render specific selections if we have any fallback logic or just empty
+                    renderCourseSelect([], preselectedSlug);
                 });
             } else {
-                // Use embedded data
+                // Use gathered data
                 renderCourseSelect(courses, preselectedSlug);
             }
         }
