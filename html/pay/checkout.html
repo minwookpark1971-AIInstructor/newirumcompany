@@ -261,8 +261,8 @@
                 await paymentWidget.requestPayment({
                     orderId: orderId,
                     orderName: orderName,
-                    successUrl: window.location.origin + '/html/pay/success.html',
-                    failUrl: window.location.origin + '/html/pay/fail.html',
+                    successUrl: new URL('success.html', window.location.href).href,
+                    failUrl: new URL('fail.html', window.location.href).href,
                 });
             } catch (error) {
                 console.error('Payment request error:', error);
