@@ -199,21 +199,31 @@
 
         async function initializePayment() {
             try {
+                // Check protocol
+                if (window.location.protocol === 'file:') {
+                    console.warn('⚠️ [Checkout] Running via file:// protocol. Payment widget may not work correctly.');
+                    alert('주의: 로컬 파일(file://)로 실행 중입니다. 결제 위젯이 정상 작동하지 않을 수 있습니다. 웹 서버(http://localhost) 환경에서 실행해주세요.');
+                }
+
                 // Get client key from server (Mock for Static Site)
                 let clientKey = 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq'; // Default test key
 
                 try {
-                    const keyResponse = await fetch('/api/payments/client-key');
-                    if (keyResponse.ok) {
-                        const keyData = await keyResponse.json();
-                        if (keyData.clientKey) clientKey = keyData.clientKey;
+                    // Only try to fetch if we are on a server
+                    if (window.location.protocol.startsWith('http')) {
+                        const keyResponse = await fetch('/api/payments/client-key');
+                        if (keyResponse.ok) {
+                            const keyData = await keyResponse.json();
+                            if (keyData.clientKey) clientKey = keyData.clientKey;
+                        }
                     }
                 } catch (e) {
                     console.warn('⚠️ [Checkout] Failed to fetch client key, using default test key');
                 }
 
                 if (!clientKey || clientKey === '') {
-                    throw new Error('클라이언트 키를 가져올 수 없습니다.');
+                    // Fallback one last time just in case
+                    clientKey = 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq';
                 }
 
                 // Initialize Toss Payments Widget
