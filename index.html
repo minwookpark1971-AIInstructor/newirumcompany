@@ -1,37 +1,48 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Irum Academy - AI시대의 새로운 교육과정</title>
     <meta name="description" content="온라인 강의 플랫폼">
-    
+
     <!-- CSS -->
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/animations.css">
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-    
+
     <!-- jQuery Validation -->
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 </head>
+
 <body>
     <!-- Header -->
     <div id="header-container"></div>
 
     <!-- Hero Section -->
-    <section class="hero-section" style="background-image: url('images/backgrounds/hero-background.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; margin-top: 80px; min-height: 50vh; display: flex; align-items: center; justify-content: center; padding-top: 3rem; padding-bottom: 3rem; position: relative;">
-        <div class="container" style="position: relative; z-index: 1; width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;">
+    <section class="hero-section"
+        style="margin-top: 80px; min-height: 50vh; display: flex; align-items: center; justify-content: center; padding-top: 3rem; padding-bottom: 3rem; position: relative; overflow: hidden;">
+        <iframe src='https://my.spline.design/aigreymarketingbanner-2a0D8In7xm5RTtf4m4cGsvAV/' frameborder='0'
+            width='100%' height='100%'
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; border: none;"></iframe>
+        <div class="container"
+            style="position: relative; z-index: 1; width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;">
             <div class="hero-content reveal-up" style="text-align: center; width: 100%; margin: 0 auto;">
-                <h1 class="hero-title" style="text-align: center; margin-bottom: 1.5rem; color: #ffffff; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">AI시대의<br>새로운 교육과정</h1>
-                <p class="hero-description" style="text-align: center; max-width: 800px; margin: 0 auto; color: #ffffff; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);">
+                <h1 class="hero-title"
+                    style="text-align: center; margin-bottom: 1.5rem; color: #ffffff; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">
+                    AI시대의<br>새로운 교육과정</h1>
+                <p class="hero-description"
+                    style="text-align: center; max-width: 800px; margin: 0 auto; color: #ffffff; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);">
                     이룸아카데미와 함께<br>
                     AI리터러시를 뛰어넘어<br>
                     AI로 자신의 경쟁력을 높이는<br>
@@ -59,7 +70,8 @@
                         <span class="curriculum-hero__badge">선착순 20명</span>
                     </div>
                     <div class="curriculum-hero__cta-group">
-                        <button class="curriculum-hero__cta curriculum-hero__cta--primary" id="curriculum-apply-btn">설명회 신청하기</button>
+                        <button class="curriculum-hero__cta curriculum-hero__cta--primary" id="curriculum-apply-btn">설명회
+                            신청하기</button>
                     </div>
                 </div>
             </div>
@@ -184,7 +196,8 @@
                 <button class="aiw-modal-close" aria-label="닫기">×</button>
             </div>
             <form id="aiw-apply-form">
-                <div class="aiw-modal-notice" style="background-color: #F3F4F6; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; font-size: 0.9375rem; color: #374151; line-height: 1.6;">
+                <div class="aiw-modal-notice"
+                    style="background-color: #F3F4F6; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; font-size: 0.9375rem; color: #374151; line-height: 1.6;">
                     본 설명회는 2026년 1월 5일(금) 저녁 20:00 ~ 20:30에 Zoom으로 진행됩니다.
                 </div>
                 <div class="form-group">
@@ -193,11 +206,13 @@
                 </div>
                 <div class="form-group">
                     <label for="aiw-phone" class="form-label">연락처 *</label>
-                    <input type="tel" id="aiw-phone" name="phone" class="form-input" placeholder="010-0000-0000" required>
+                    <input type="tel" id="aiw-phone" name="phone" class="form-input" placeholder="010-0000-0000"
+                        required>
                 </div>
                 <div class="form-group">
                     <label style="display: flex; align-items: center; gap: var(--spacing-2); cursor: pointer;">
-                        <input type="checkbox" id="aiw-curriculum-request" name="curriculum-request" style="width: auto; margin: 0;">
+                        <input type="checkbox" id="aiw-curriculum-request" name="curriculum-request"
+                            style="width: auto; margin: 0;">
                         <span class="form-label" style="margin: 0;">커리큘럼 상세 자료도 함께 요청하기</span>
                     </label>
                 </div>
@@ -230,16 +245,16 @@
     <script src="js/main.js"></script>
     <script src="js/animations.js"></script>
     <script src="js/courses.js"></script>
-    
+
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Wait for components to load
-            setTimeout(function() {
+            setTimeout(function () {
                 // Load courses
                 if (typeof loadCourseGrid === 'function') {
                     loadCourseGrid();
                 }
-                
+
                 // Initialize animations
                 if (typeof initRevealAnimations === 'function') {
                     initRevealAnimations();
@@ -272,13 +287,13 @@
         function initAIWorkshop() {
             // Render schedule
             renderSchedule();
-            
+
             // Render curriculum accordion
             renderCurriculumAccordion();
-            
+
             // Initialize accordion interactions
             initCurriculumAccordion();
-            
+
             // Initialize modal
             initModal();
         }
@@ -341,10 +356,10 @@
             if (text.includes('<br>')) {
                 return text;
             }
-            
+
             const words = text.split(' ');
             if (words.length <= 1) return text;
-            
+
             // 임시 요소를 생성하여 텍스트 너비 측정
             const $temp = $('<span>').css({
                 'font-size': '1.125rem',
@@ -354,55 +369,55 @@
                 'white-space': 'nowrap',
                 'font-family': 'inherit'
             }).appendTo('body');
-            
+
             // 중간 지점에서 시작
             let splitIndex = Math.floor(words.length / 2);
             let bestSplit = splitIndex;
             let bestDiff = Infinity;
-            
+
             // 중간 지점 주변(-3 ~ +3)에서 최적의 분할점 찾기
             for (let offset = -3; offset <= 3; offset++) {
                 const testSplit = splitIndex + offset;
                 if (testSplit > 0 && testSplit < words.length) {
                     const testFirst = words.slice(0, testSplit).join(' ');
                     const testSecond = words.slice(testSplit).join(' ');
-                    
+
                     const firstWidth = $temp.text(testFirst).width();
                     const secondWidth = $temp.text(testSecond).width();
                     const diff = Math.abs(firstWidth - secondWidth);
-                    
+
                     if (diff < bestDiff) {
                         bestDiff = diff;
                         bestSplit = testSplit;
                     }
                 }
             }
-            
+
             $temp.remove();
-            
+
             const firstLine = words.slice(0, bestSplit).join(' ');
             const secondLine = words.slice(bestSplit).join(' ');
-            
+
             return firstLine + '<br>' + secondLine;
         }
 
         function renderCurriculumAccordion() {
             const $list = $('#curriculum-accordion-list');
             $list.empty();
-            
-            curriculumAccordionData.forEach(function(item, index) {
+
+            curriculumAccordionData.forEach(function (item, index) {
                 const $card = $('<div>')
                     .addClass('curriculum-card')
                     .attr('data-week', item.week);
-                
+
                 const $badge = $('<div>')
                     .addClass('curriculum-card__badge')
                     .text(item.week);
-                
+
                 const $title = $('<h4>')
                     .addClass('curriculum-card__title')
                     .text(item.title);
-                
+
                 const $content = $('<div>')
                     .addClass('curriculum-card__content')
                     .html(`
@@ -415,15 +430,15 @@
                             <p class="curriculum-card__section-text">${item.practice}</p>
                         </div>
                     `);
-                
+
                 // Initially hide content (collapsed state)
                 $content.hide();
-                
+
                 $card.append($badge, $title, $content);
                 $list.append($card);
-                
+
                 // 카드가 렌더링된 후 너비를 측정하여 텍스트 재분할
-                setTimeout(function() {
+                setTimeout(function () {
                     const cardWidth = $card.width();
                     if (cardWidth > 0) {
                         const formattedTitle = splitTextIntoTwoLines(item.title, cardWidth);
@@ -435,12 +450,12 @@
 
         function initCurriculumAccordion() {
             // Toggle all cards button
-            $('#curriculum-toggle-all').on('click', function() {
+            $('#curriculum-toggle-all').on('click', function () {
                 const $allCards = $('.curriculum-card');
                 const $allContents = $('.curriculum-card__content');
                 const $toggleBtn = $(this);
                 const isExpanded = $allCards.first().hasClass('curriculum-card--expanded');
-                
+
                 if (isExpanded) {
                     // Close all
                     $allCards.removeClass('curriculum-card--expanded');
@@ -455,7 +470,7 @@
             });
 
             // CTA button click handler
-            $('#curriculum-apply-btn').on('click', function() {
+            $('#curriculum-apply-btn').on('click', function () {
                 $('#aiw-modal').fadeIn(300);
             });
         }
@@ -463,15 +478,15 @@
         function renderSchedule() {
             const $list = $('#aiw-schedule-list');
             $list.empty();
-            
-            aiwSchedule.forEach(function(item) {
+
+            aiwSchedule.forEach(function (item) {
                 const dateObj = new Date(item.date);
                 const dateStr = dateObj.toLocaleDateString('ko-KR', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
                 });
-                
+
                 const $item = $('<li>')
                     .html(`
                         <span>${dateStr}</span>
@@ -485,24 +500,24 @@
         function renderCurriculum() {
             const $grid = $('#aiw-curriculum-grid');
             $grid.empty();
-            
-            aiwCurriculum.forEach(function(item, index) {
+
+            aiwCurriculum.forEach(function (item, index) {
                 const $card = $('<div>')
                     .addClass('card aiw-curriculum-card')
                     .attr('data-week', item.week);
-                
+
                 const $header = $('<div>')
                     .addClass('aiw-curriculum-card-header')
                     .html(`<span class="aiw-curriculum-week">${item.week}</span>`);
-                
+
                 const $title = $('<h4>')
                     .addClass('aiw-curriculum-card-title')
                     .text(item.title);
-                
+
                 const $content = $('<p>')
                     .addClass('card-description')
                     .text(item.content);
-                
+
                 $card.append($header, $title, $content);
                 $grid.append($card);
             });
@@ -513,35 +528,35 @@
             $('#aiw-apply-btn, #curriculum-apply-btn').off('click');
             $('.aiw-modal-close, .aiw-modal-backdrop, #aiw-modal-cancel').off('click');
             $('#aiw-apply-form').off('submit');
-            
+
             // Open modal
-            $('#aiw-apply-btn, #curriculum-apply-btn').on('click', function() {
+            $('#aiw-apply-btn, #curriculum-apply-btn').on('click', function () {
                 $('#aiw-modal').fadeIn(300);
             });
 
             // Close modal
-            $('.aiw-modal-close, .aiw-modal-backdrop, #aiw-modal-cancel').on('click', function() {
+            $('.aiw-modal-close, .aiw-modal-backdrop, #aiw-modal-cancel').on('click', function () {
                 $('#aiw-modal').fadeOut(300);
-                setTimeout(function() {
+                setTimeout(function () {
                     $('#aiw-apply-form')[0].reset();
                     $('#aiw-curriculum-request').prop('checked', false);
                 }, 300);
             });
 
             // Form submit
-            $('#aiw-apply-form').on('submit', function(e) {
+            $('#aiw-apply-form').on('submit', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
-                
+
                 const name = $('#aiw-name').val().trim();
                 const phone = $('#aiw-phone').val().trim();
                 const curriculumRequest = $('#aiw-curriculum-request').is(':checked');
-                
+
                 if (!name || !phone) {
                     alert('이름과 연락처를 모두 입력해주세요.');
                     return false;
                 }
-                
+
                 // Save application to localStorage
                 const application = {
                     id: Date.now().toString(),
@@ -551,7 +566,7 @@
                     createdAt: new Date().toISOString(),
                     status: 'pending'
                 };
-                
+
                 // Get existing applications
                 let applications = [];
                 try {
@@ -564,7 +579,7 @@
                     alert('저장 중 오류가 발생했습니다. 다시 시도해주세요.');
                     return false;
                 }
-                
+
                 // Add new application
                 applications.push(application);
                 try {
@@ -574,26 +589,26 @@
                     alert('저장 중 오류가 발생했습니다. 다시 시도해주세요.');
                     return false;
                 }
-                
+
                 // Show success message
                 let message = '신청이 접수되었습니다.';
                 if (curriculumRequest) {
                     message += '\n커리큘럼 요청도 함께 접수되었습니다.';
                 }
                 alert(message);
-                
+
                 // Close modal and reset form
                 $('#aiw-modal').fadeOut(300);
-                setTimeout(function() {
+                setTimeout(function () {
                     $('#aiw-apply-form')[0].reset();
                     $('#aiw-curriculum-request').prop('checked', false);
                 }, 300);
-                
+
                 return false;
             });
         }
     </script>
-    
+
     <style>
         /* Curriculum Hero Section - 시원스쿨 스타일 */
         .curriculum-hero {
@@ -1248,39 +1263,44 @@
         .hero-title {
             font-size: 3.6rem !important;
         }
+
         .hero-description {
             font-size: 1.8rem !important;
         }
-        
+
         @media (min-width: 768px) {
             .hero-title {
                 font-size: 4.8rem !important;
             }
+
             .hero-description {
                 font-size: 2rem !important;
             }
         }
-        
+
         @media (min-width: 1024px) {
             .hero-title {
                 font-size: 6rem !important;
             }
+
             .hero-description {
                 font-size: 2rem !important;
             }
         }
-        
+
         @media (max-width: 767px) {
             .hero-section {
                 padding-top: calc(3rem - 140px) !important;
                 background-image: url('images/backgrounds/hero-background-mobile.jpg') !important;
             }
+
             .hero-title {
                 font-size: 2.36544rem !important;
                 line-height: 1.3 !important;
                 white-space: normal !important;
                 text-align: center !important;
             }
+
             .hero-description {
                 font-size: 1.261568rem !important;
                 line-height: 1.5 !important;
@@ -1289,6 +1309,5 @@
         }
     </style>
 </body>
+
 </html>
-
-
