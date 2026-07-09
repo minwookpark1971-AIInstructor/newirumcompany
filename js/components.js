@@ -122,6 +122,53 @@ function getPathInfo() {
     };
 }
 
+// Vanilla header behavior for pages that do not load jQuery/main.js
+function vanillaHeaderInit() {
+    const header = document.getElementById('main-header');
+    const toggle = document.getElementById('mobile-menu-toggle');
+    const mobileNav = document.getElementById('mobile-nav');
+    if (!header) return;
+
+    window.addEventListener('scroll', function () {
+        header.classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
+
+    if (toggle && mobileNav) {
+        toggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            mobileNav.classList.toggle('active');
+        });
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.header-content, .mobile-nav')) {
+                mobileNav.classList.remove('active');
+            }
+        });
+        mobileNav.querySelectorAll('a').forEach(function (a) {
+            a.addEventListener('click', function () {
+                mobileNav.classList.remove('active');
+            });
+        });
+    }
+}
+
+// Vanilla reveal/stagger animations for pages that do not load animations.js
+function vanillaRevealInit() {
+    const targets = document.querySelectorAll(
+        '.reveal, .reveal-up, .reveal-down, .reveal-left, .reveal-right, .reveal-fade, .stagger-container');
+    if (!targets.length) return;
+
+    const observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    targets.forEach(function (el) { observer.observe(el); });
+}
+
 // Load header and footer
 function loadComponents() {
     const headerContainer = document.getElementById('header-container');
@@ -131,13 +178,19 @@ function loadComponents() {
         headerContainer.innerHTML = generateHeader();
         setTimeout(function () {
             if (typeof initHeader === 'function') {
-                initHeader();
+                initHeader(); // jQuery version from main.js (legacy pages)
+            } else {
+                vanillaHeaderInit();
             }
         }, 100);
     }
 
     if (footerContainer) {
         footerContainer.innerHTML = generateFooter();
+    }
+
+    if (typeof initRevealAnimations !== 'function') {
+        vanillaRevealInit();
     }
 }
 

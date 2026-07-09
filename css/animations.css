@@ -309,3 +309,34 @@
 }
 
 
+
+/* Vanilla reveal support (components.js) — .reveal 없이 방향 클래스만 쓴 요소도 표시 */
+.reveal-up,
+.reveal-down,
+.reveal-left,
+.reveal-right,
+.reveal-fade {
+    opacity: 0;
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-up.revealed,
+.reveal-down.revealed,
+.reveal-left.revealed,
+.reveal-right.revealed,
+.reveal-fade.revealed {
+    opacity: 1;
+    transform: translate(0, 0);
+}
+
+.stagger-container.revealed {
+    opacity: 1;
+}
+
+.stagger-container.revealed .stagger-item:nth-child(1) { transition-delay: 0s; }
+.stagger-container.revealed .stagger-item:nth-child(2) { transition-delay: 0.1s; }
+.stagger-container.revealed .stagger-item:nth-child(3) { transition-delay: 0.2s; }
+.stagger-container.revealed .stagger-item:nth-child(4) { transition-delay: 0.3s; }
+.stagger-container.revealed .stagger-item:nth-child(5) { transition-delay: 0.4s; }
+.stagger-container.revealed .stagger-item:nth-child(6) { transition-delay: 0.5s; }
