@@ -1279,3 +1279,124 @@ body {
     }
 }
 
+
+/* ============================================
+   Apply / Contact Forms (2026 개편)
+   ============================================ */
+
+.page-hero-subtitle {
+    margin-top: var(--spacing-4);
+    font-size: var(--font-size-lg);
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.apply-hero {
+    padding: 10rem 0 3rem;
+    text-align: center;
+    background-color: var(--bg);
+}
+
+.apply-container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-6);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-4);
+}
+
+@media (max-width: 640px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.track-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-4);
+}
+
+@media (max-width: 640px) {
+    .track-selector {
+        grid-template-columns: 1fr;
+    }
+}
+
+.track-option {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    padding: var(--spacing-5);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.track-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.track-option.selected {
+    border-color: var(--primary);
+    background-color: rgba(37, 99, 235, 0.04);
+}
+
+.track-option-title {
+    font-weight: 700;
+    color: var(--heading);
+}
+
+.track-option-desc {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+textarea.form-input {
+    resize: vertical;
+    min-height: 120px;
+}
+
+select.form-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%23525252' stroke-width='1.5' d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+}
+
+.apply-success {
+    text-align: center;
+    padding: var(--spacing-16) 0;
+}
+
+.apply-success h2 {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-4);
+    color: var(--heading);
+}
+
+.apply-success p {
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-8);
+    line-height: 1.6;
+}
+
+.contact-direct {
+    margin-top: var(--spacing-8);
+    text-align: center;
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+}
+
+.contact-direct a {
+    color: var(--primary);
+    text-decoration: none;
+}
