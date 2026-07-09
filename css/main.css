@@ -844,8 +844,23 @@ body {
 .footer-contact {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-6);
     margin: 0;
     height: auto;
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.footer-contact a {
+    color: var(--text-muted);
+    text-decoration: none;
+}
+
+.footer-contact a:hover {
+    color: var(--text);
 }
 
 .footer-legal {

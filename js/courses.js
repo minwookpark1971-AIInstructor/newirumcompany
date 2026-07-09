@@ -159,9 +159,9 @@ function createGridItem(course, color, labelEn, index) {
             } else if (courseSlug) {
                 // For existing courses, go to courses page
                 if (isRoot) {
-                    coursesUrl = 'html/courses.html?course=' + courseSlug;
+                    coursesUrl = 'html/programs.html?course=' + courseSlug;
                 } else {
-                    coursesUrl = 'courses.html?course=' + courseSlug;
+                    coursesUrl = 'programs.html?course=' + courseSlug;
                 }
             } else {
                 console.warn('No slug found for course:', course);
@@ -253,7 +253,7 @@ function loadCourseDetail(slug) {
             if (course) {
                 renderCourseDetail(course);
             } else {
-                window.location.href = '../courses.html';
+                window.location.href = '../programs.html';
             }
         }).fail(function() {
             console.error('Failed to load course data');
@@ -263,7 +263,7 @@ function loadCourseDetail(slug) {
         if (course) {
             renderCourseDetail(course);
         } else {
-            window.location.href = '../courses.html';
+            window.location.href = '../programs.html';
         }
     }
 }
