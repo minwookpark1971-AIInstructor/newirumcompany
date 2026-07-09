@@ -1,3 +1,5 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+
 /* ============================================
    CSS Variables (Theme)
    ============================================ */
@@ -49,7 +51,7 @@
     --spacing-24: 6rem;
     
     /* Typography */
-    --font-sans: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-sans: 'Pretendard Variable', Pretendard, 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --font-size-xs: 0.75rem;
     --font-size-sm: 0.875rem;
     --font-size-base: 1rem;
@@ -458,6 +460,12 @@ body {
     z-index: 1;
 }
 
+@media (min-width: 1024px) {
+    .section {
+        padding: var(--spacing-20) 0;
+    }
+}
+
 /* Section content alignment */
 .section .container {
     text-align: center;
@@ -701,15 +709,17 @@ body {
    ============================================ */
 .card {
     background-color: var(--surface);
+    border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     padding: var(--spacing-6);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-sm);
     transition: all var(--transition-slow);
 }
 
 .card:hover {
-    box-shadow: var(--shadow-xl);
-    transform: translateY(-8px);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
 }
 
 .card-header {
@@ -844,8 +854,23 @@ body {
 .footer-contact {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-6);
     margin: 0;
     height: auto;
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.footer-contact a {
+    color: var(--text-muted);
+    text-decoration: none;
+}
+
+.footer-contact a:hover {
+    color: var(--text);
 }
 
 .footer-legal {
@@ -1264,3 +1289,505 @@ body {
     }
 }
 
+
+/* ============================================
+   Apply / Contact Forms (2026 개편)
+   ============================================ */
+
+.page-hero-subtitle {
+    margin-top: var(--spacing-4);
+    font-size: var(--font-size-lg);
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.apply-hero {
+    padding: 10rem 0 3rem;
+    text-align: center;
+    background-color: var(--bg);
+}
+
+.apply-container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-6);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-4);
+}
+
+@media (max-width: 640px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.track-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-4);
+}
+
+@media (max-width: 640px) {
+    .track-selector {
+        grid-template-columns: 1fr;
+    }
+}
+
+.track-option {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    padding: var(--spacing-5);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.track-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.track-option.selected {
+    border-color: var(--primary);
+    background-color: rgba(37, 99, 235, 0.04);
+}
+
+.track-option-title {
+    font-weight: 700;
+    color: var(--heading);
+}
+
+.track-option-desc {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+textarea.form-input {
+    resize: vertical;
+    min-height: 120px;
+}
+
+select.form-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%23525252' stroke-width='1.5' d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+}
+
+.apply-success {
+    text-align: center;
+    padding: var(--spacing-16) 0;
+}
+
+.apply-success h2 {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-4);
+    color: var(--heading);
+}
+
+.apply-success p {
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-8);
+    line-height: 1.6;
+}
+
+.contact-direct {
+    margin-top: var(--spacing-8);
+    text-align: center;
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+}
+
+.contact-direct a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+/* ============================================
+   Programs / Workshop / Home (2026 개편)
+   ============================================ */
+
+.feature-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-6);
+    margin-top: var(--spacing-8);
+}
+
+@media (max-width: 767px) {
+    .feature-grid-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+.process-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-6);
+    margin-top: var(--spacing-8);
+}
+
+@media (max-width: 767px) {
+    .process-steps {
+        grid-template-columns: 1fr;
+    }
+}
+
+.process-step {
+    padding: var(--spacing-6);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+}
+
+.process-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--radius-full);
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-weight: 700;
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-4);
+}
+
+.process-step h3 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-2);
+    color: var(--heading);
+}
+
+.process-step p {
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+}
+
+.program-group {
+    margin-top: var(--spacing-12);
+}
+
+.program-group-header h3 {
+    font-size: var(--font-size-xl);
+    color: var(--heading);
+    margin-bottom: var(--spacing-1);
+}
+
+.program-group-header p {
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-6);
+}
+
+.program-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-6);
+}
+
+.program-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.program-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.program-category {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.program-meta {
+    margin-top: auto;
+    padding-top: var(--spacing-3);
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+}
+
+/* Workshop timeline & FAQ */
+.wk-timeline {
+    max-width: 760px;
+    margin: var(--spacing-8) auto 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+}
+
+.wk-step {
+    display: flex;
+    gap: var(--spacing-5);
+    align-items: flex-start;
+    padding: var(--spacing-6);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+}
+
+.wk-step .process-num {
+    flex-shrink: 0;
+    margin-bottom: 0;
+}
+
+.wk-step h3 {
+    font-size: var(--font-size-lg);
+    color: var(--heading);
+    margin-bottom: var(--spacing-2);
+}
+
+.wk-step p {
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+    line-height: 1.7;
+}
+
+.faq-list {
+    max-width: 760px;
+    margin: var(--spacing-8) auto 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+.faq-item {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    overflow: hidden;
+}
+
+.faq-q {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-5) var(--spacing-6);
+    background: none;
+    border: none;
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--heading);
+    cursor: pointer;
+    text-align: left;
+}
+
+.faq-q span {
+    color: var(--primary);
+    font-size: var(--font-size-xl);
+    font-weight: 400;
+    transition: transform var(--transition-fast);
+}
+
+.faq-item.open .faq-q span {
+    transform: rotate(45deg);
+}
+
+.faq-a {
+    display: none;
+    padding: 0 var(--spacing-6) var(--spacing-5);
+}
+
+.faq-item.open .faq-a {
+    display: block;
+}
+
+.faq-a p {
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+    line-height: 1.7;
+}
+
+/* Workshop highlight (모집 중) */
+.wk-highlight {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: var(--spacing-8);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-xl);
+    background: rgba(37, 99, 235, 0.03);
+}
+
+.wk-highlight-badge {
+    display: inline-block;
+    padding: 2px 12px;
+    border-radius: var(--radius-full);
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    margin-bottom: var(--spacing-4);
+}
+
+.wk-highlight h2 {
+    font-size: var(--font-size-2xl);
+    color: var(--heading);
+    margin-bottom: var(--spacing-2);
+}
+
+.wk-highlight-sub {
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-6);
+}
+
+.wk-highlight-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-3) var(--spacing-8);
+    margin-bottom: var(--spacing-8);
+}
+
+@media (max-width: 767px) {
+    .wk-highlight-info {
+        grid-template-columns: 1fr;
+    }
+}
+
+.wk-highlight-info div {
+    display: flex;
+    gap: var(--spacing-3);
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+}
+
+.wk-highlight-info dt {
+    flex-shrink: 0;
+    min-width: 3.5rem;
+    font-weight: 700;
+    color: var(--heading);
+}
+
+.wk-highlight-info dd {
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* Home hero & track split */
+.home-hero {
+    position: relative;
+    min-height: 72vh;
+    margin-top: 80px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+}
+
+.home-hero-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    z-index: 0;
+}
+
+.home-hero-content {
+    position: relative;
+    z-index: 1;
+    padding-bottom: var(--spacing-16);
+    pointer-events: none;
+}
+
+.home-hero-content h1 {
+    font-size: clamp(1.75rem, 4vw, var(--font-size-5xl));
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+    line-height: 1.25;
+    margin-bottom: var(--spacing-4);
+}
+
+.home-hero-content p {
+    font-size: var(--font-size-lg);
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+    line-height: 1.6;
+}
+
+.track-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-6);
+}
+
+@media (max-width: 767px) {
+    .track-split {
+        grid-template-columns: 1fr;
+    }
+}
+
+.track-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    padding: var(--spacing-12) var(--spacing-8);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--surface);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.track-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-3px);
+}
+
+.track-card-label {
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--primary);
+}
+
+.track-card h2 {
+    font-size: var(--font-size-3xl);
+    color: var(--heading);
+}
+
+.track-card p {
+    color: var(--text-muted);
+    line-height: 1.7;
+}
+
+.track-card-cta {
+    margin-top: var(--spacing-4);
+    font-weight: 700;
+    color: var(--primary);
+}
+
+@media (max-width: 640px) {
+    .hidden-sm {
+        display: none;
+    }
+}
+
+/* ============================================
+   Typography refinement (2026 개편)
+   ============================================ */
+h1, h2, h3, h4,
+.section-title,
+.page-hero-title,
+.card-title {
+    letter-spacing: -0.02em;
+    font-weight: 700;
+}

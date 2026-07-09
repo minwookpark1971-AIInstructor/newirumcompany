@@ -1,124 +1,51 @@
-# Irum Academy
+# Irum Academy (이룸아카데미)
 
-HTML + JavaScript + CSS 기반 온라인 강의 플랫폼
+대학·기관 맞춤 AI 실무교육과 강사 집중 워크샵을 위한 정적 웹사이트.
+2026년 7월 미니멀 개편 — 두 트랙(대학·기관 / 강사 워크샵) 중심 구조.
 
 ## 기술 스택
 
-- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
-- **Styling**: Custom CSS
-- **JavaScript Libraries**: jQuery
-- **Icons**: Emoji & Unicode
-- **Font**: Noto Sans KR (Google Fonts)
+- **Frontend**: 정적 HTML + CSS + JavaScript (신규 코드는 vanilla JS, 레거시 상세 페이지만 jQuery)
+- **Font**: Pretendard (CDN)
+- **Backend**: Supabase (신청·문의 저장, 관리자 인증) — 별도 서버 없음
+- **배포**: 정적 호스팅 (GitHub Pages / Vercel 등)
 
-## 프로젝트 구조
+## 사이트 구조
 
 ```
-irumacademy/
-├── html/                    # HTML 페이지
-│   ├── index.html           # 홈 페이지
-│   ├── courses.html         # 강의 목록
-│   ├── courses/             # 강의 상세 페이지
-│   ├── instructor-growth.html # 강사 성장 프로그램
-│   ├── apply.html           # 강의 신청
-│   ├── community.html       # 커뮤니티
-│   └── auth/                # 인증 페이지
-├── css/                     # 스타일시트
-│   ├── main.css            # 메인 스타일
-│   └── animations.css      # 애니메이션
-├── js/                      # JavaScript 파일
-│   ├── main.js             # 메인 스크립트
-│   ├── components.js       # 컴포넌트 생성
-│   ├── courses.js          # 강의 관련
-│   ├── courses-data.js     # 강의 데이터
-│   └── animations.js       # 애니메이션
-├── data/                    # 데이터 파일
-│   └── courses.json        # 강의 데이터
-└── images/                  # 이미지 파일
+index.html                     # 홈 — 두 트랙 분기 허브
+html/
+├── programs.html              # 대학·기관 교육 (프로그램 카탈로그 9개, 3그룹)
+├── courses/*.html             # 프로그램 상세 9개
+├── workshop.html              # 강사 집중교육 워크샵
+├── apply.html                 # 교육 신청 폼 (track=institution|workshop)
+├── contact.html               # 문의 폼
+├── admin.html                 # 관리자 (Supabase Auth 로그인, 신청/문의 조회)
+├── privacy.html / terms.html
+css/  main.css, animations.css
+js/
+├── components.js              # 헤더/푸터 생성 (전 페이지 공용, vanilla)
+├── supabase-client.js         # Supabase 클라이언트 + 제출 헬퍼
+├── courses-data.js            # 프로그램 데이터 (단일 소스)
+├── main.js, animations.js     # 레거시 상세 페이지용 (jQuery)
+docs/archive/                  # 과거 점검 보고서 아카이브
 ```
 
-## 주요 기능
+## 데이터 흐름
 
-### 페이지
+- 방문자가 `apply.html`/`contact.html` 폼 제출 → Supabase `applications`/`inquiries` 테이블에 INSERT
+- RLS 정책: 익명(anon)은 INSERT만 가능, 조회 불가. 인증된 관리자만 SELECT/UPDATE
+- 관리자는 `html/admin.html`에서 로그인 후 신청/문의 조회, 상태 변경(신규→연락함→완료), CSV 내보내기
 
-- `/html/index.html` - 홈
-- `/html/courses.html` - 강의 목록
-- `/html/courses/[course-name].html` - 강의 상세
-- `/html/instructor-growth.html` - 강사 성장 프로그램
-- `/html/apply.html` - 강의 신청 (결제 기능 포함)
-- `/html/pay/checkout.html` - 결제 페이지
-- `/html/pay/success.html` - 결제 성공 페이지
-- `/html/pay/fail.html` - 결제 실패 페이지
-- `/html/community.html` - 커뮤니티
-- `/html/auth/login.html` - 로그인
-- `/html/auth/signup.html` - 회원가입
+### Supabase
 
-### 결제 시스템
+- 프로젝트: `irum-academy` (ap-northeast-2)
+- URL/publishable key는 `js/supabase-client.js`에 있음 (공개 가능 — 보안은 RLS로 담보)
+- 관리자 계정: Supabase 대시보드 → Authentication → Users에서 생성
 
-- **토스페이먼츠 결제 연동**: 카드 결제 지원
-- **가격 변조 방지**: 서버에서 결제 금액 검증
-- **결제 승인 API**: 서버 사이드 결제 승인 처리
-- **웹훅 지원**: 결제 상태 변경 자동 처리
+## 로컬 실행
 
-자세한 내용은 [토스페이먼츠_결제_연동_가이드.md](./토스페이먼츠_결제_연동_가이드.md)를 참고하세요.
-
-### 주요 기능
-
-- 반응형 디자인
-- 동적 콘텐츠 로딩
-- 스크롤 애니메이션
-- 강의 상세 정보 표시
-- 커뮤니티 기능
-
-## 사용 방법
-
-### 로컬 개발 환경
-
-1. 의존성 설치
 ```bash
-npm install
+npx http-server -p 3999 .
+# http://localhost:3999
 ```
-
-2. 환경 변수 설정
-```bash
-cp .env.example .env
-# .env 파일을 편집하여 필요한 설정 추가
-```
-
-3. 서버 실행
-```bash
-npm start
-# 또는 개발 모드
-npm run dev
-```
-
-4. 브라우저에서 접속
-```
-http://localhost:3000
-```
-
-### 프로덕션 배포
-
-1. 환경 변수 설정 (운영용 키 사용)
-2. 서버 실행
-3. HTTPS 설정 (결제 기능 사용 시 필수)
-
-## 스타일링
-
-### CSS 구조
-
-- `main.css`: 전역 스타일, 레이아웃, 컴포넌트 스타일
-- `animations.css`: 애니메이션 효과
-
-### 반응형 디자인
-
-모바일 우선 접근 방식으로 구현되어 있습니다.
-
-## 접근성
-
-- 시맨틱 HTML 사용
-- 키보드 네비게이션 지원
-- 반응형 디자인
-
-## 라이선스
-
-MIT

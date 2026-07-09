@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대학·기관 교육 | Irum Academy</title>
+    <meta name="description" content="대학, 공공기관, 기업을 위한 맞춤형 AI 실무 교육 프로그램">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/animations.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <div id="header-container"></div>
+
+    <!-- Page Hero -->
+    <section class="page-hero apply-hero">
+        <div class="container">
+            <div class="page-hero-content reveal-up">
+                <h1 class="page-hero-title">대학·기관 교육</h1>
+                <p class="page-hero-subtitle">
+                    대학, 공공기관, 기업의 눈높이에 맞춘 AI 실무 교육.<br>
+                    출강·온라인·혼합 어떤 방식이든 기관 일정에 맞춰 설계합니다.
+                </p>
+                <div class="hero-actions">
+                    <a href="apply.html?track=institution" class="btn btn-primary btn-lg">교육 신청</a>
+                    <a href="#programs" class="btn btn-outline btn-lg">프로그램 보기</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- 대상 기관 -->
+        <section class="section">
+            <div class="container">
+                <div class="text-center reveal-up">
+                    <h2 class="section-title">이런 기관과 함께합니다</h2>
+                </div>
+                <div class="feature-grid-3 stagger-container">
+                    <div class="card stagger-item">
+                        <h3 class="card-title">대학</h3>
+                        <p class="card-description">
+                            교양·비교과 AI 특강, 취업 시즌 집중 특강, 교수학습센터 연계 프로그램
+                        </p>
+                    </div>
+                    <div class="card stagger-item">
+                        <h3 class="card-title">공공기관</h3>
+                        <p class="card-description">
+                            임직원 AI 리터러시 교육, 업무 자동화 실습, 기관 맞춤 커리큘럼
+                        </p>
+                    </div>
+                    <div class="card stagger-item">
+                        <h3 class="card-title">기업</h3>
+                        <p class="card-description">
+                            재직자 직무별 AI 실무 교육, 생산성 향상 워크샵, 팀 단위 집중 과정
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 프로그램 카탈로그 -->
+        <section class="section" id="programs">
+            <div class="container">
+                <div class="text-center reveal-up">
+                    <h2 class="section-title">프로그램</h2>
+                    <p class="section-description">
+                        모든 과정은 기관의 목적과 대상에 맞춰 시간·난이도·실습 비중을 조정할 수 있습니다.
+                    </p>
+                </div>
+                <div id="program-groups"></div>
+            </div>
+        </section>
+
+        <!-- 운영 방식 -->
+        <section class="section">
+            <div class="container">
+                <div class="text-center reveal-up">
+                    <h2 class="section-title">운영 방식</h2>
+                </div>
+                <div class="feature-grid-3 stagger-container">
+                    <div class="card stagger-item">
+                        <h3 class="card-title">출강</h3>
+                        <p class="card-description">강사가 기관을 방문하여 현장 실습 중심으로 진행합니다.</p>
+                    </div>
+                    <div class="card stagger-item">
+                        <h3 class="card-title">온라인 실시간</h3>
+                        <p class="card-description">Zoom 기반 실시간 강의와 과제 피드백으로 진행합니다.</p>
+                    </div>
+                    <div class="card stagger-item">
+                        <h3 class="card-title">혼합(블렌디드)</h3>
+                        <p class="card-description">이론은 온라인, 실습은 현장에서 — 기관 일정에 맞게 조합합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 진행 프로세스 -->
+        <section class="section">
+            <div class="container">
+                <div class="text-center reveal-up">
+                    <h2 class="section-title">진행 프로세스</h2>
+                </div>
+                <div class="process-steps stagger-container">
+                    <div class="process-step stagger-item">
+                        <span class="process-num">1</span>
+                        <h3>신청·상담</h3>
+                        <p>신청서를 남겨주시면 담당자가 1~2일 내 연락드립니다.</p>
+                    </div>
+                    <div class="process-step stagger-item">
+                        <span class="process-num">2</span>
+                        <h3>맞춤 설계·견적</h3>
+                        <p>대상·목적·일정에 맞춘 커리큘럼과 견적을 제안드립니다.</p>
+                    </div>
+                    <div class="process-step stagger-item">
+                        <span class="process-num">3</span>
+                        <h3>교육 진행·결과 보고</h3>
+                        <p>교육 후 만족도와 성과를 정리한 결과 보고를 제공합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-container"></div>
+
+    <!-- Scripts -->
+    <script src="../js/courses-data.js"></script>
+    <script src="../js/components.js"></script>
+    <script>
+        (function () {
+            const GROUPS = [
+                {
+                    title: '직무 실무형',
+                    desc: '직무별 업무에 AI를 바로 적용하는 실습 중심 과정',
+                    slugs: ['marketing-ai', 'planning-ai', 'dev-ai', 'design-ai', 'sales-ai', 'hr-ai']
+                },
+                {
+                    title: '취업·진로형',
+                    desc: 'AI·ATS 시대의 취업 전략을 다루는 학생·구직자 대상 과정',
+                    slugs: ['career-ai', 'job-bootcamp']
+                },
+                {
+                    title: '재직자형',
+                    desc: '재직자의 생산성과 업무 자동화 역량을 높이는 과정',
+                    slugs: ['employee-ai']
+                }
+            ];
+
+            const container = document.getElementById('program-groups');
+
+            GROUPS.forEach(function (group) {
+                const section = document.createElement('div');
+                section.className = 'program-group reveal-up';
+
+                let cards = '';
+                group.slugs.forEach(function (slug) {
+                    const c = getCourseBySlug(slug);
+                    if (!c) return;
+                    cards +=
+                        '<a class="card program-card" href="courses/' + c.slug + '.html">' +
+                        '<span class="program-category">' + c.category + '</span>' +
+                        '<h4 class="card-title">' + c.title + '</h4>' +
+                        '<p class="card-description">' + c.shortDescription + '</p>' +
+                        '<span class="program-meta">' + c.durationLabel + ' · ' + c.formatLabel + '</span>' +
+                        '</a>';
+                });
+
+                section.innerHTML =
+                    '<div class="program-group-header">' +
+                    '<h3>' + group.title + '</h3>' +
+                    '<p>' + group.desc + '</p>' +
+                    '</div>' +
+                    '<div class="program-card-grid">' + cards + '</div>';
+
+                container.appendChild(section);
+            });
+        })();
+    </script>
+</body>
+
+</html>

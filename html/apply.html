@@ -4,31 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>강의 신청하기 | Irum Academy</title>
-    <meta name="description" content="강의 신청하기">
+    <title>교육 신청 | Irum Academy</title>
+    <meta name="description" content="대학·기관 교육 및 강사 워크샵 신청">
 
     <!-- CSS -->
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/animations.css">
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap"
-        rel="stylesheet">
-
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/ui-lightness/jquery-ui.css">
-
-    <script src="../js/courses-data.js"></script>
-
-    <!-- jQuery Validation -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
-
-    <!-- Toss Payments SDK -->
-    <script src="https://js.tosspayments.com/v1/payment"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -36,1407 +20,194 @@
     <div id="header-container"></div>
 
     <!-- Page Hero -->
-    <section class="page-hero"
-        style="background-image: url('../images/backgrounds/apply-banner.png'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: scroll; padding-top: 120px; min-height: calc(50vh - 300px); display: flex; align-items: center; justify-content: center; padding-bottom: 3rem; position: relative; transform: translate3d(0, 0, 0); -webkit-transform: translate3d(0, 0, 0); backface-visibility: hidden; -webkit-backface-visibility: hidden;">
-        <div class="page-hero-overlay"
-            style="position: absolute; inset: 0; background: rgba(255, 255, 255, 0.6); z-index: 0;"></div>
-        <div class="container"
-            style="position: relative; z-index: 1; width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;">
-            <div class="page-hero-content reveal-up"
-                style="text-align: center !important; width: 100% !important; margin: 0 auto !important; padding: 0 !important; color: #000000 !important; max-width: 100% !important;">
-                <h1 class="page-hero-title" id="apply-page-title"
-                    style="color: #000000 !important; text-shadow: none !important;">강의 신청하기</h1>
+    <section class="page-hero apply-hero">
+        <div class="container">
+            <div class="page-hero-content reveal-up">
+                <h1 class="page-hero-title">교육 신청</h1>
+                <p class="page-hero-subtitle">신청 내용을 남겨주시면 담당자가 1~2일 내에 연락드립니다.</p>
             </div>
         </div>
     </section>
 
     <!-- Main Content -->
-    <main class="main-content" style="background-color: #ffffff; padding-top: 2rem; padding-bottom: 3rem;">
+    <main class="main-content">
         <section class="section">
-            <div class="container" style="max-width: 1200px;">
-                <!-- Progress Steps -->
-                <div class="progress-steps reveal-up"
-                    style="display: flex; justify-content: center; align-items: center; margin-bottom: 3rem; gap: 1rem;">
-                    <div class="step-item" data-step="1">
-                        <div class="step-icon active">📄</div>
-                        <span class="step-title">과정 선택</span>
-                    </div>
-                    <div class="step-connector"></div>
-                    <div class="step-item" data-step="2">
-                        <div class="step-icon">👤</div>
-                        <span class="step-title">신청자 정보</span>
-                    </div>
-                    <div class="step-connector"></div>
-                    <div class="step-item" data-step="3">
-                        <div class="step-icon">✓</div>
-                        <span class="step-title">확인 및 제출</span>
-                    </div>
-                </div>
+            <div class="container apply-container">
 
-                <div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
-                    <!-- Form Area -->
-                    <div class="form-area">
-                        <form id="apply-form">
-                            <!-- Step 1: Course Selection -->
-                            <div class="form-step active" data-step="1">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h2 class="card-title">과정 선택</h2>
-                                        <p class="card-description">신청하실 강의를 선택해주세요</p>
-                                    </div>
-                                    <div class="card-content">
-                                        <div class="form-group" id="course-selection-group">
-                                            <!-- Course selection will be loaded here -->
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="preferredSchedule" class="form-label">희망 일정 *</label>
-                                            <select id="preferredSchedule" name="preferredSchedule" class="form-input"
-                                                required>
-                                                <option value="">일정을 선택해주세요</option>
-                                            </select>
-                                            <p
-                                                style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
-                                                원하시는 수강 일정을 선택해주세요
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
-                                    <button type="button" class="btn btn-primary btn-lg" onclick="nextStep()">
-                                        다음 단계 →
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Step 2: Applicant Info -->
-                            <div class="form-step" data-step="2" style="display: none;">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h2 class="card-title">신청자 정보</h2>
-                                        <p class="card-description" id="applicant-info-description">신청자 정보를 입력해주세요</p>
-                                    </div>
-                                    <div class="card-content">
-                                        <div class="form-group">
-                                            <label for="name" class="form-label">이름 *</label>
-                                            <input type="text" id="name" name="name" class="form-input"
-                                                placeholder="홍길동" required readonly
-                                                style="background-color: #f3f4f6; cursor: not-allowed;">
-                                            <p id="name-info"
-                                                style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; display: none;">
-                                                로그인한 회원 정보입니다</p>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="email" class="form-label">이메일 *</label>
-                                            <input type="email" id="email" name="email" class="form-input"
-                                                placeholder="example@email.com" required readonly
-                                                style="background-color: #f3f4f6; cursor: not-allowed;">
-                                            <p id="email-info"
-                                                style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; display: none;">
-                                                로그인한 회원 정보입니다</p>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="phone" class="form-label">연락처 *</label>
-                                            <input type="tel" id="phone" name="phone" class="form-input"
-                                                placeholder="010-1234-5678" required readonly
-                                                style="background-color: #f3f4f6; cursor: not-allowed;">
-                                            <p id="phone-info"
-                                                style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; display: none;">
-                                                로그인한 회원 정보입니다</p>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="organization" class="form-label">소속 (선택)</label>
-                                            <input type="text" id="organization" name="organization" class="form-input"
-                                                placeholder="회사명 또는 조직명">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="position" class="form-label">직무 *</label>
-                                            <input type="text" id="position" name="position" class="form-input"
-                                                placeholder="예: 마케터, 기획자, 개발자" required>
-                                        </div>
-                                        <div class="form-group" id="course-price-group" style="display: none;">
-                                            <div
-                                                style="padding: 1rem; background: #f8fafc; border-radius: 0.5rem; border: 1px solid #e2e8f0;">
-                                                <label class="form-label" style="margin-bottom: 0.5rem;">과정 가격</label>
-                                                <div style="display: flex; align-items: baseline; gap: 0.5rem;">
-                                                    <span id="course-price-amount"
-                                                        style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">0</span>
-                                                    <span style="font-size: 1rem; color: var(--text-muted);">원</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; margin-top: 1.5rem;">
-                                    <button type="button" class="btn btn-outline btn-lg" onclick="prevStep()">
-                                        ← 이전
-                                    </button>
-                                    <button type="button" class="btn btn-primary btn-lg" onclick="nextStep()">
-                                        다음 단계 →
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Step 3: Confirmation -->
-                            <div class="form-step" data-step="3" style="display: none;">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h2 class="card-title">신청 정보 확인</h2>
-                                        <p class="card-description">입력하신 정보를 확인해주세요</p>
-                                    </div>
-                                    <div class="card-content" id="confirmation-content">
-                                        <!-- Confirmation content will be generated here -->
-                                    </div>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; margin-top: 1.5rem;">
-                                    <button type="button" class="btn btn-outline btn-lg" onclick="prevStep()">
-                                        ← 이전
-                                    </button>
-                                    <div style="display: flex; gap: 0.5rem;">
-                                        <button type="button" class="btn btn-primary btn-lg" id="payment-btn"
-                                            style="display: none;">
-                                            결제하기
-                                        </button>
-                                        <button type="submit" class="btn btn-primary btn-lg" id="submit-btn">
-                                            신청 제출
-                                        </button>
-                                    </div>
-                                </div>
-                                <div style="margin-top: 1rem; padding: 1rem; background: #f8fafc; border-radius: 0.5rem; border: 1px solid #e2e8f0; display: none;"
-                                    id="payment-info">
-                                    <p style="font-size: 0.875rem; color: var(--text-muted); margin: 0;">
-                                        💳 가격이 있는 과정은 결제하기 버튼을 통해 결제 후 신청이 완료됩니다.
-                                    </p>
-                                </div>
-                                <div style="margin-top: 1rem; padding: 1rem; background: #f8fafc; border-radius: 0.5rem; border: 1px solid #e2e8f0; display: none;"
-                                    id="payment-info">
-                                    <p style="font-size: 0.875rem; color: var(--text-muted); margin: 0;">
-                                        💳 가격이 있는 과정은 결제하기 버튼을 통해 결제 후 신청이 완료됩니다.
-                                    </p>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- Summary Card -->
-                    <div class="summary-card" style="position: sticky; top: 100px; height: fit-content;">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">신청 요약</h3>
-                            </div>
-                            <div class="card-content" id="summary-content">
-                                <p style="color: var(--text-muted);">과정을 선택해주세요</p>
-                            </div>
+                <form id="apply-form" novalidate>
+                    <!-- Track Selection -->
+                    <div class="form-group">
+                        <label class="form-label">신청 유형 *</label>
+                        <div class="track-selector">
+                            <label class="track-option" id="track-institution-label">
+                                <input type="radio" name="track" value="institution" checked>
+                                <span class="track-option-title">대학·기관 교육</span>
+                                <span class="track-option-desc">대학, 공공기관, 기업 대상 맞춤 강의</span>
+                            </label>
+                            <label class="track-option" id="track-workshop-label">
+                                <input type="radio" name="track" value="workshop">
+                                <span class="track-option-title">강사 워크샵</span>
+                                <span class="track-option-desc">강사를 위한 집중교육 워크샵</span>
+                            </label>
                         </div>
                     </div>
+
+                    <div class="form-group" id="org-group">
+                        <label class="form-label" for="org_name">기관/학교명</label>
+                        <input type="text" class="form-input" id="org_name" name="org_name" placeholder="예: OO대학교 교수학습센터">
+                    </div>
+
+                    <div class="form-group" id="program-group">
+                        <label class="form-label" for="program_slug">희망 프로그램</label>
+                        <select class="form-input" id="program_slug" name="program_slug">
+                            <option value="">선택해주세요 (미정이어도 괜찮습니다)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="contact_name">담당자/신청자 이름 *</label>
+                            <input type="text" class="form-input" id="contact_name" name="contact_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="phone">연락처</label>
+                            <input type="tel" class="form-input" id="phone" name="phone" placeholder="010-0000-0000">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="email">이메일 *</label>
+                        <input type="email" class="form-input" id="email" name="email" required placeholder="reply@example.com">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="headcount">예상 인원</label>
+                            <input type="number" class="form-input" id="headcount" name="headcount" min="1" placeholder="예: 30">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="preferred_date">희망 일정</label>
+                            <input type="text" class="form-input" id="preferred_date" name="preferred_date" placeholder="예: 2026년 9월 중, 협의 가능">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="message">요청사항</label>
+                        <textarea class="form-input" id="message" name="message" rows="5"
+                            placeholder="교육 목적, 대상, 원하시는 내용을 자유롭게 적어주세요."></textarea>
+                    </div>
+
+                    <p class="form-error" id="form-error" hidden></p>
+
+                    <button type="submit" class="btn btn-primary btn-lg btn-block" id="submit-btn">신청하기</button>
+                </form>
+
+                <!-- Success -->
+                <div id="apply-success" class="apply-success" hidden>
+                    <h2>신청이 접수되었습니다</h2>
+                    <p>담당자가 확인 후 남겨주신 연락처로 회신드리겠습니다. 감사합니다.</p>
+                    <a href="../index.html" class="btn btn-outline">홈으로 돌아가기</a>
                 </div>
+
             </div>
         </section>
     </main>
-
-    <!-- Success Modal -->
-    <div class="modal-overlay" id="success-modal">
-        <div class="modal-content" style="max-width: 600px; text-align: center;">
-            <div style="font-size: 4rem; margin-bottom: 1rem;">✓</div>
-            <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">접수 완료</h2>
-            <p style="color: var(--text-muted); margin-bottom: 2rem;">
-                신청이 성공적으로 접수되었습니다.<br>
-                확인 후 연락드리겠습니다.
-            </p>
-            <div style="display: flex; gap: 1rem; justify-content: center;">
-                <a href="courses.html" class="btn btn-outline btn-lg">다른 강의 보기</a>
-                <a href="index.html" class="btn btn-primary btn-lg">홈으로 가기</a>
-            </div>
-        </div>
-    </div>
 
     <!-- Footer -->
     <div id="footer-container"></div>
 
     <!-- Scripts -->
-    <!-- <script src="../js/courses-data.js"></script> -->
+    <script src="../js/courses-data.js"></script>
+    <script src="../js/supabase-client.js"></script>
     <script src="../js/components.js"></script>
-    <script src="../js/main.js"></script>
-    <script src="../js/animations.js"></script>
-    <script src="../js/courses.js"></script>
-
     <script>
-        let currentStep = 1;
-        let selectedCourse = null;
-        let isInstructorMode = false;
-        let isConsultMode = false;
+        (function () {
+            const form = document.getElementById('apply-form');
+            const programSelect = document.getElementById('program_slug');
+            const programGroup = document.getElementById('program-group');
+            const orgInput = document.getElementById('org_name');
+            const errorEl = document.getElementById('form-error');
+            const submitBtn = document.getElementById('submit-btn');
 
-        $(document).ready(function () {
-            // COURSES_DATA 로드 확인
-            if (typeof COURSES_DATA === 'undefined') {
-                console.error('❌ 과정 데이터 로드 실패');
-                $('#course-selection-group').html('<p style="color: red;">과정 정보를 불러올 수 없습니다. 페이지를 새로고침해주세요.</p>');
-            } else {
-                console.log('✅ COURSES_DATA 정상 로드');
+            // 프로그램 옵션 채우기
+            COURSES_DATA.forEach(function (c) {
+                const opt = document.createElement('option');
+                opt.value = c.slug;
+                opt.textContent = c.title;
+                programSelect.appendChild(opt);
+            });
+
+            // URL 파라미터 반영 (?track=institution&program=slug)
+            const params = new URLSearchParams(window.location.search);
+            const trackParam = params.get('track');
+            if (trackParam === 'workshop' || trackParam === 'institution') {
+                form.elements['track'].value = trackParam;
             }
-            // Load schedules from localStorage
-            loadSchedules();
-
-            // Wait for components to load
-            setTimeout(function () {
-                // Check URL parameters
-                const urlParams = new URLSearchParams(window.location.search);
-                const courseParam = urlParams.get('course');
-                const typeParam = urlParams.get('type');
-                const actionParam = urlParams.get('action');
-
-                if (typeParam === 'instructor') {
-                    isInstructorMode = true;
-                    if (actionParam === 'consult') {
-                        isConsultMode = true;
-                        $('#apply-page-title').text('Zoom 상담 신청');
-                        updateScheduleLabelForConsult();
-                    } else {
-                        $('#apply-page-title').text('강사 성장 프로그램 신청');
-                    }
-                    if (typeof loadInstructorMode === 'function') {
-                        loadInstructorMode();
-                    }
-                    loadSchedules();
-                } else if (courseParam) {
-                    if (typeof loadCourseSelection === 'function') {
-                        loadCourseSelection(courseParam);
-                    }
-                    loadSchedules();
-                } else {
-                    if (typeof loadCourseSelection === 'function') {
-                        loadCourseSelection();
-                    }
-                    loadSchedules();
-                }
-
-                // Initialize form validation
-                if (typeof initApplyForm === 'function') {
-                    initApplyForm();
-                }
-
-                // Initialize animations
-                if (typeof initRevealAnimations === 'function') {
-                    initRevealAnimations();
-                }
-            }, 200);
-        });
-
-        function loadSchedules() {
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const typeParam = urlParams.get('type');
-                const actionParam = urlParams.get('action');
-
-                const $scheduleSelect = $('#preferredSchedule');
-                $scheduleSelect.empty();
-                $scheduleSelect.append('<option value="">일정을 선택해주세요</option>');
-
-                if (typeParam === 'instructor') {
-                    if (actionParam === 'consult') {
-                        // Load consult schedules
-                        updateScheduleLabelForConsult();
-                        const stored = localStorage.getItem('consultSchedules');
-                        if (stored) {
-                            const schedules = JSON.parse(stored);
-                            const activeSchedules = schedules.filter(s => s.active);
-                            activeSchedules.forEach(schedule => {
-                                const date = new Date(schedule.date);
-                                const dateStr = date.toLocaleDateString('ko-KR');
-                                const optionText = `${dateStr} ${schedule.time || ''}`;
-                                $scheduleSelect.append(`<option value="${schedule.date}|${schedule.time || ''}">${optionText}</option>`);
-                            });
-                        }
-                    } else {
-                        // Load instructor program schedules
-                        const stored = localStorage.getItem('instructorSchedules');
-                        if (stored) {
-                            const schedules = JSON.parse(stored);
-                            const activeSchedules = schedules.filter(s => s.active);
-                            activeSchedules.forEach(schedule => {
-                                const date = new Date(schedule.date);
-                                const dateStr = date.toLocaleDateString('ko-KR');
-                                $scheduleSelect.append(`<option value="${schedule.date}">${dateStr}</option>`);
-                            });
-                        }
-                    }
-                } else {
-                    // Load regular course schedules - filter by selected course
-                    const stored = localStorage.getItem('courseSchedules');
-                    if (stored) {
-                        const schedules = JSON.parse(stored);
-                        const activeSchedules = schedules.filter(s => s.active);
-
-                        // Get selected course identifier
-                        let selectedCourseSlug = '';
-                        const courseParam = urlParams.get('course');
-                        if (courseParam) {
-                            selectedCourseSlug = courseParam;
-                        } else {
-                            // Try to get from course selection
-                            const $courseSelect = $('#courseSlug');
-                            if ($courseSelect.length && $courseSelect.val()) {
-                                selectedCourseSlug = $courseSelect.val();
-                            }
-                        }
-
-                        // Filter schedules by course
-                        const courseSchedules = selectedCourseSlug ?
-                            activeSchedules.filter(s =>
-                                (s.courseSlug && s.courseSlug === selectedCourseSlug) ||
-                                (s.courseId && s.courseId === selectedCourseSlug)
-                            ) : activeSchedules;
-
-                        // Sort by date
-                        courseSchedules.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-                        courseSchedules.forEach(schedule => {
-                            const date = new Date(schedule.date);
-                            const dateStr = date.toLocaleDateString('ko-KR', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                                weekday: 'short'
-                            });
-                            $scheduleSelect.append(`<option value="${schedule.date}">${dateStr}</option>`);
-                        });
-
-                        if (courseSchedules.length === 0 && selectedCourseSlug) {
-                            $scheduleSelect.append('<option value="" disabled>선택한 과정의 일정이 없습니다.</option>');
-                        }
-                    }
-                }
-            } catch (e) {
-                console.error('Error loading schedules:', e);
-            }
-        }
-
-        function updateScheduleLabelForConsult() {
-            const $label = $('label[for="preferredSchedule"]');
-            const $helpText = $('#preferredSchedule').next('p');
-            if ($label.length) {
-                $label.text('Zoom 상담 희망일정 *');
-            }
-            if ($helpText.length) {
-                $helpText.text('원하시는 Zoom 상담 일정을 선택해주세요');
-            }
-        }
-
-
-        function loadCourseSelection(preselectedSlug = null) {
-            // Initialize courses array safely
-            let courses = [];
-
-            // Try to load embedded data
-            if (typeof COURSES_DATA !== 'undefined' && Array.isArray(COURSES_DATA)) {
-                console.log('✅ [loadCourseSelection] COURSES_DATA loaded:', COURSES_DATA.length, 'courses');
-                courses = [...COURSES_DATA];
-            } else {
-                console.warn('⚠️ [loadCourseSelection] COURSES_DATA not loaded or invalid. Using empty array for static courses.');
+            const programParam = params.get('program');
+            if (programParam) {
+                programSelect.value = programParam;
             }
 
-            // Load registered courses from localStorage
-            try {
-                const storedCourses = localStorage.getItem('registeredCourses');
-                if (storedCourses) {
-                    const registeredCourses = JSON.parse(storedCourses);
-                    if (Array.isArray(registeredCourses)) {
-                        console.log('✅ [loadCourseSelection] Loaded', registeredCourses.length, 'registered courses from localStorage');
-                        courses = [...courses, ...registeredCourses];
-                    } else {
-                        console.warn('⚠️ [loadCourseSelection] registeredCourses in localStorage is not an array');
-                    }
-                } else {
-                    console.log('ℹ️ [loadCourseSelection] No registeredCourses found in localStorage');
-                }
-            } catch (e) {
-                console.error('❌ [loadCourseSelection] Error loading registered courses:', e);
-            }
-
-            if (courses.length === 0) {
-                console.log('ℹ️ [loadCourseSelection] No courses available. Attempting fallback AJAX load.');
-                // Fallback: try AJAX
-                $.getJSON('../data/courses.json', function (ajaxCourses) {
-                    console.log('✅ [loadCourseSelection] AJAX load success');
-                    renderCourseSelect(ajaxCourses, preselectedSlug);
-                }).fail(function () {
-                    console.error('❌ [loadCourseSelection] AJAX load failed');
-                    // Still render specific selections if we have any fallback logic or just empty
-                    renderCourseSelect([], preselectedSlug);
+            // 트랙에 따라 필드 조정
+            function updateTrackFields() {
+                const track = form.elements['track'].value;
+                const isInstitution = track === 'institution';
+                programGroup.hidden = !isInstitution;
+                orgInput.placeholder = isInstitution
+                    ? '예: OO대학교 교수학습센터'
+                    : '소속 (프리랜서인 경우 비워두셔도 됩니다)';
+                document.querySelectorAll('.track-option').forEach(function (el) {
+                    el.classList.toggle('selected', el.querySelector('input').checked);
                 });
-            } else {
-                // Use gathered data
-                renderCourseSelect(courses, preselectedSlug);
             }
-        }
-
-        function renderCourseSelect(courses, preselectedSlug = null) {
-            const $group = $('#course-selection-group');
-            $group.html('<label for="courseSlug" class="form-label">강의 선택 *</label>');
-
-            const $select = $('<select>').attr({
-                id: 'courseSlug',
-                name: 'courseSlug',
-                class: 'form-input',
-                required: true
+            form.querySelectorAll('input[name="track"]').forEach(function (r) {
+                r.addEventListener('change', updateTrackFields);
             });
+            updateTrackFields();
 
-            $select.append($('<option>').val('').text('강의를 선택하세요'));
-
-            // Remove duplicates and sort
-            const uniqueCourses = [];
-            const seen = new Set();
-            courses.forEach(function (course) {
-                const identifier = course.slug || course.id;
-                if (identifier && !seen.has(identifier)) {
-                    seen.add(identifier);
-                    uniqueCourses.push(course);
-                }
-            });
-
-            uniqueCourses.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
-
-            uniqueCourses.forEach(function (course) {
-                const identifier = course.slug || course.id;
-                const $option = $('<option>').val(identifier).text(course.title);
-                if (preselectedSlug && (course.slug === preselectedSlug || course.id === preselectedSlug)) {
-                    $option.prop('selected', true);
-                    selectedCourse = course;
-                    updateSummary();
-                }
-                $select.append($option);
-            });
-
-            $group.append($select);
-
-            $select.on('change', function () {
-                const identifier = $(this).val();
-                if (identifier) {
-                    selectedCourse = uniqueCourses.find(c => (c.slug === identifier) || (c.id === identifier));
-                    updateSummary();
-                    updateCoursePrice();
-                    // Reload schedules for selected course
-                    loadSchedules();
-                } else {
-                    selectedCourse = null;
-                    updateSummary();
-                    $('#course-price-group').hide();
-                    // Clear schedules
-                    const $scheduleSelect = $('#preferredSchedule');
-                    $scheduleSelect.empty();
-                    $scheduleSelect.append('<option value="">일정을 선택해주세요</option>');
-                }
-            });
-        }
-
-        function loadInstructorMode() {
-            const $group = $('#course-selection-group');
-            $group.html(`
-                <div style="padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-lg); background: rgba(255,255,255,0.5);">
-                    <p style="font-weight: 500;">강사 성장 프로그램</p>
-                    <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">
-                        전문 강사로 성장하기 위한 체계적인 프로그램입니다.
-                    </p>
-                </div>
-            `);
-            selectedCourse = { title: '강사 성장 프로그램', category: '강사 성장' };
-            updateSummary();
-        }
-
-        function nextStep() {
-            if (validateCurrentStep()) {
-                if (currentStep < 3) {
-                    currentStep++;
-                    showStep(currentStep);
-                    updateProgressSteps();
-                }
-            }
-        }
-
-        function prevStep() {
-            if (currentStep > 1) {
-                currentStep--;
-                showStep(currentStep);
-                updateProgressSteps();
-            }
-        }
-
-        function showStep(step) {
-            $('.form-step').hide().removeClass('active');
-            $(`.form-step[data-step="${step}"]`).show().addClass('active');
-
-            // Step 2로 이동할 때 로그인 정보 자동 입력
-            if (step === 2) {
-                loadUserInfo();
-                updateCoursePrice();
-            }
-
-            if (step === 3) {
-                generateConfirmation();
-            }
-        }
-
-        // 로그인한 사용자 정보 불러오기
-        function loadUserInfo() {
-            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-
-            if (isLoggedIn) {
-                const userEmail = localStorage.getItem('userEmail') || '';
-                let userName = '';
-                let userPhone = '';
-
-                // users 배열에서 사용자 정보 찾기 (이메일로 매칭) - 우선적으로 사용
-                try {
-                    const stored = localStorage.getItem('users');
-                    if (stored) {
-                        const users = JSON.parse(stored);
-                        const currentUser = users.find(u => u.email === userEmail);
-                        if (currentUser) {
-                            // 이름 가져오기 (users 배열 우선)
-                            userName = currentUser.name || '';
-                            // 전화번호 가져오기
-                            userPhone = currentUser.phone || '';
-
-                            // localStorage에도 업데이트 (다음 로그인 시 빠른 접근)
-                            if (userName) {
-                                localStorage.setItem('userName', userName);
-                            }
-                        }
-                    }
-                } catch (e) {
-                    console.error('Error loading user info from users array:', e);
-                }
-
-                // users 배열에서 찾지 못한 경우 localStorage에서 가져오기 (fallback)
-                if (!userName) {
-                    userName = localStorage.getItem('userName') || '';
-                }
-                if (!userPhone) {
-                    userPhone = localStorage.getItem('userPhone') || '';
-                }
-
-                // 이메일 설정
-                if (userEmail) {
-                    $('#email').val(userEmail);
-                    $('#email-info').show();
-                    $('#email').prop('readonly', true).css({
-                        'background-color': '#f3f4f6',
-                        'cursor': 'not-allowed'
-                    });
-                }
-
-                // 이름 설정
-                if (userName) {
-                    $('#name').val(userName);
-                    $('#name-info').show();
-                    $('#name').prop('readonly', true).css({
-                        'background-color': '#f3f4f6',
-                        'cursor': 'not-allowed'
-                    });
-                } else {
-                    console.warn('사용자 이름을 찾을 수 없습니다. userEmail:', userEmail);
-                }
-
-                // 전화번호 설정
-                if (userPhone) {
-                    $('#phone').val(userPhone);
-                    $('#phone-info').show();
-                    $('#phone').prop('readonly', true).css({
-                        'background-color': '#f3f4f6',
-                        'cursor': 'not-allowed'
-                    });
-                } else {
-                    console.warn('사용자 전화번호를 찾을 수 없습니다. userEmail:', userEmail);
-                }
-
-                // 설명 텍스트 변경
-                if (userName && userPhone) {
-                    $('#applicant-info-description').text('회원 정보가 자동으로 입력되었습니다. 소속과 직무만 입력해주세요.');
-                } else {
-                    $('#applicant-info-description').text('일부 회원 정보가 자동으로 입력되었습니다. 누락된 정보를 입력해주세요.');
-                }
-            } else {
-                // 로그인하지 않은 경우 필드를 편집 가능하게
-                $('#name, #email, #phone').prop('readonly', false).css({
-                    'background-color': '',
-                    'cursor': ''
-                });
-                $('#name-info, #email-info, #phone-info').hide();
-                $('#applicant-info-description').text('신청자 정보를 입력해주세요');
-            }
-        }
-
-        function updateProgressSteps() {
-            $('.step-item').each(function () {
-                const stepNum = parseInt($(this).data('step'));
-                const $icon = $(this).find('.step-icon');
-                if (stepNum <= currentStep) {
-                    $(this).addClass('active');
-                    $icon.addClass('active');
-                } else {
-                    $(this).removeClass('active');
-                    $icon.removeClass('active');
-                }
-            });
-        }
-
-        function validateCurrentStep() {
-            if (currentStep === 1) {
-                if (!selectedCourse && !isInstructorMode) {
-                    alert('과정을 선택해주세요');
-                    return false;
-                }
-                if (!$('#preferredSchedule').val()) {
-                    const scheduleLabel = isConsultMode ? 'Zoom 상담 희망일정' : '희망 일정';
-                    alert(scheduleLabel + '을 선택해주세요');
-                    return false;
-                }
-            } else if (currentStep === 2) {
-                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-                if (isLoggedIn) {
-                    // 로그인한 경우: 직무만 필수
-                    if (!$('#position').val()) {
-                        alert('직무를 입력해주세요');
-                        return false;
-                    }
-                } else {
-                    // 로그인하지 않은 경우: 모든 필수 항목 확인
-                    if (!$('#name').val() || !$('#email').val() || !$('#phone').val() || !$('#position').val()) {
-                        alert('필수 항목을 모두 입력해주세요');
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
-        function generateConfirmation() {
-            const scheduleValue = $('#preferredSchedule').val();
-            let scheduleDisplay = scheduleValue;
-            let timeDisplay = '';
-
-            if (isConsultMode && scheduleValue.includes('|')) {
-                const parts = scheduleValue.split('|');
-                scheduleDisplay = parts[0];
-                timeDisplay = parts[1] || '';
-            }
-
-            const formData = {
-                course: selectedCourse ? selectedCourse.title : (isConsultMode ? 'Zoom 상담 신청' : '강사 성장 프로그램'),
-                schedule: scheduleDisplay,
-                time: timeDisplay,
-                name: $('#name').val(),
-                email: $('#email').val(),
-                phone: $('#phone').val(),
-                organization: $('#organization').val(),
-                position: $('#position').val()
-            };
-
-            const scheduleLabel = isConsultMode ? 'Zoom 상담 희망일정' : '희망 일정';
-            const scheduleDisplayFinal = timeDisplay ? `${scheduleDisplay} ${timeDisplay}` : scheduleDisplay;
-
-            // Check if course has price (Hybrid logic)
-            let coursePrice = 0;
-            if (selectedCourse && !isInstructorMode) {
-                coursePrice = selectedCourse.price || 0;
-                // Override with localStorage if available
-                try {
-                    const storedPrices = localStorage.getItem('coursePrices');
-                    if (storedPrices) {
-                        const prices = JSON.parse(storedPrices);
-                        const customPrice = prices[selectedCourse.slug] || prices[selectedCourse.id];
-                        if (customPrice && customPrice > 0) {
-                            coursePrice = customPrice;
-                        }
-                    }
-                } catch (e) {
-                    console.error('Error loading custom price:', e);
-                }
-            }
-
-            const $content = $('#confirmation-content');
-            $content.html(`
-                <div class="confirmation-summary">
-                    <!-- 과정 정보 섹션 -->
-                    <div class="confirmation-section">
-                        <div class="confirmation-section-header">
-                            <span class="section-icon">📚</span>
-                            <h3 class="section-title">과정 정보</h3>
-                        </div>
-                        <div class="confirmation-item">
-                            <span class="confirmation-label">${isConsultMode ? '신청 유형' : '선택한 과정'}</span>
-                            <span class="confirmation-value">${formData.course}</span>
-                        </div>
-                        <div class="confirmation-item">
-                            <span class="confirmation-label">${scheduleLabel}</span>
-                            <span class="confirmation-value">${scheduleDisplayFinal}</span>
-                        </div>
-                        ${coursePrice > 0 ? `
-                        <div class="confirmation-item">
-                            <span class="confirmation-label">결제 금액</span>
-                            <span class="confirmation-value" style="font-weight: 600; color: var(--primary);">${coursePrice.toLocaleString('ko-KR')}원</span>
-                        </div>
-                        ` : ''}
-                    </div>
-                    
-                    <!-- 신청자 정보 섹션 -->
-                    <div class="confirmation-section">
-                        <div class="confirmation-section-header">
-                            <span class="section-icon">👤</span>
-                            <h3 class="section-title">신청자 정보</h3>
-                        </div>
-                        <div class="confirmation-item">
-                            <span class="confirmation-label">이름</span>
-                            <span class="confirmation-value">${formData.name}</span>
-                        </div>
-                        <div class="confirmation-item">
-                            <span class="confirmation-label">이메일</span>
-                            <span class="confirmation-value">${formData.email}</span>
-                        </div>
-                        <div class="confirmation-item">
-                            <span class="confirmation-label">연락처</span>
-                            <span class="confirmation-value">${formData.phone}</span>
-                        </div>
-                        ${formData.organization ? `
-                        <div class="confirmation-item">
-                            <span class="confirmation-label">소속</span>
-                            <span class="confirmation-value">${formData.organization}</span>
-                        </div>
-                        ` : ''}
-                        <div class="confirmation-item">
-                            <span class="confirmation-label">직무</span>
-                            <span class="confirmation-value">${formData.position}</span>
-                        </div>
-                    </div>
-                    
-                    <!-- 약관 동의 -->
-                    <div class="confirmation-agreement">
-                        <div class="agreement-checkbox">
-                            <input type="checkbox" id="agreeToTerms" name="agreeToTerms" required>
-                            <label for="agreeToTerms">
-                                <span class="checkbox-label">개인정보 처리방침에 동의합니다</span>
-                                <span class="required-mark">*</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            `);
-
-            // Show/hide payment button based on price
-            console.log('🔍 [generateConfirmation] Course price:', coursePrice);
-            if (coursePrice > 0) {
-                $('#payment-btn').show().prop('disabled', false);
-                $('#submit-btn').text('신청만 하기');
-                $('#payment-info').html('<p style="font-size: 0.875rem; color: var(--text-muted); margin: 0;">💳 가격이 있는 과정은 결제하기 버튼을 통해 결제 후 신청이 완료됩니다.</p>');
-                $('#payment-info').show();
-                console.log('✅ [generateConfirmation] Payment button shown');
-            } else {
-                $('#payment-btn').hide();
-                $('#submit-btn').text('신청 제출');
-                $('#payment-info').html('<p style="color: #ef4444; font-size: 0.875rem; margin: 0;">⚠️ 과정 가격이 0원입니다. 유료 과정인 경우 관리자에게 문의하세요.</p>');
-                $('#payment-info').show();
-                console.log('ℹ️ [generateConfirmation] Payment button hidden (no price)');
-            }
-        }
-
-        function updateCoursePrice() {
-            if (!selectedCourse || isInstructorMode) {
-                $('#course-price-group').hide();
-                return;
-            }
-
-            try {
-                // 1. 먼저 courses-data.js의 price 확인
-                let price = selectedCourse.price || 0;
-
-                // 2. localStorage의 커스텀 가격이 있으면 우선 적용
-                const storedPrices = localStorage.getItem('coursePrices');
-                if (storedPrices) {
-                    const prices = JSON.parse(storedPrices);
-                    const customPrice = prices[selectedCourse.slug] || prices[selectedCourse.id];
-                    if (customPrice && customPrice > 0) {
-                        price = customPrice;
-                    }
-                }
-
-                console.log('💰 Course price:', selectedCourse.title, '=', price.toLocaleString('ko-KR'), '원');
-
-                const $amountDisplay = $('#course-price-amount');
-                const $unitDisplay = $amountDisplay.next('span'); // "원"
-                const $container = $('#course-price-group > div');
-
-                if (price > 0) {
-                    $amountDisplay.text(price.toLocaleString('ko-KR')).css('color', 'var(--primary)');
-                    $unitDisplay.show();
-                    $('#course-price-warning').remove();
-                    $('#course-price-group').show();
-                } else if (!isInstructorMode && !isConsultMode) {
-                    // Price is 0 for a regular course
-                    $amountDisplay.text('0').css('color', '#ef4444'); // Red 0
-                    $unitDisplay.show();
-
-                    if ($('#course-price-warning').length === 0) {
-                        $container.append('<p id="course-price-warning" style="color: #ef4444; font-size: 0.875rem; margin-top: 0.5rem; font-weight: 500;">⚠️ 가격이 설정되지 않았습니다. 관리자 페이지에서 가격을 설정해주세요.</p>');
-                    } else {
-                        $('#course-price-warning').show();
-                    }
-                    $('#course-price-group').show();
-                } else {
-                    $('#course-price-group').hide();
-                }
-            } catch (e) {
-                console.error('Error loading course price:', e);
-                $('#course-price-group').hide();
-            }
-        }
-
-        function updateSummary() {
-            const $summary = $('#summary-content');
-            if (selectedCourse) {
-                // 가격 가져오기 (courses-data.js 우선)
-                let price = selectedCourse.price || 0;
-                const storedPrices = localStorage.getItem('coursePrices');
-                if (storedPrices) {
-                    const prices = JSON.parse(storedPrices);
-                    const customPrice = prices[selectedCourse.slug] || prices[selectedCourse.id];
-                    if (customPrice && customPrice > 0) {
-                        price = customPrice;
-                    }
-                }
-
-                const priceDisplay = price > 0 ? `
-                    <div>
-                        <label style="font-size: 0.75rem; color: var(--text-muted);">가격</label>
-                        <p style="font-size: 0.875rem; margin-top: 0.25rem; font-weight: 600; color: var(--primary);">${price.toLocaleString('ko-KR')}원</p>
-                    </div>
-                ` : '';
-
-                $summary.html(`
-                    <div style="display: flex; flex-direction: column; gap: 1rem;">
-                        <div>
-                            <label style="font-size: 0.75rem; color: var(--text-muted);">선택한 강의</label>
-                            <p style="font-weight: 500; margin-top: 0.25rem;">${selectedCourse.title}</p>
-                            <span class="badge" style="margin-top: 0.5rem; display: inline-block;">${selectedCourse.category}</span>
-                        </div>
-                        <div>
-                            <label style="font-size: 0.75rem; color: var(--text-muted);">기간</label>
-                            <p style="font-size: 0.875rem; margin-top: 0.25rem;">${selectedCourse.durationLabel}</p>
-                        </div>
-                        <div>
-                            <label style="font-size: 0.75rem; color: var(--text-muted);">형식</label>
-                            <p style="font-size: 0.875rem; margin-top: 0.25rem;">${selectedCourse.formatLabel}</p>
-                        </div>
-                        ${priceDisplay}
-                    </div>
-                `);
-            } else if (isInstructorMode) {
-                $summary.html(`
-                    <div>
-                        <label style="font-size: 0.75rem; color: var(--text-muted);">프로그램</label>
-                        <p style="font-weight: 500; margin-top: 0.25rem;">강사 성장 프로그램</p>
-                    </div>
-                `);
-            } else {
-                $summary.html('<p style="color: var(--text-muted);">과정을 선택해주세요</p>');
-            }
-        }
-
-        // 결제하기 버튼 클릭 핸들러 (이벤트 위임 사용)
-        // 결제하기 버튼 클릭 핸들러 (이벤트 위임 사용)
-        $(document).on('click', '#payment-btn', async function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            console.log('✅ [Payment] Payment button clicked');
-
-            if (!$('#agreeToTerms').is(':checked')) {
-                alert('개인정보 처리방침에 동의해주세요');
-                return;
-            }
-
-            const $btn = $(this);
-            $btn.prop('disabled', true).text('처리 중...');
-
-            try {
-                // Get course price
-                let coursePrice = selectedCourse ? (selectedCourse.price || 0) : 0;
-
-                // Override with localStorage if available (same logic as generateConfirmation)
-                if (selectedCourse) {
-                    try {
-                        const storedPrices = localStorage.getItem('coursePrices');
-                        if (storedPrices) {
-                            const prices = JSON.parse(storedPrices);
-                            const customPrice = prices[selectedCourse.slug] || prices[selectedCourse.id];
-                            if (customPrice && customPrice > 0) {
-                                coursePrice = customPrice;
-                                console.log('✅ Applied custom price:', coursePrice);
-                            }
-                        }
-                    } catch (e) {
-                        console.error('Error loading custom price:', e);
-                    }
-                }
-
-                if (coursePrice <= 0) {
-                    console.error('❌ [Payment] Price is 0, blocking payment.');
-                    alert('결제 금액 오류: 과정의 가격이 설정되지 않았습니다 (0원). 관리자 페이지에서 가격을 설정해주세요.');
-                    $btn.prop('disabled', false).text('결제하기');
-                    return;
-                }
-
-                // Mock API Call for GitHub Pages (Static Site)
-                console.log('⚠️ [Payment] Running in static mode, mocking API call');
-
-                // Simulate network delay
-                await new Promise(resolve => setTimeout(resolve, 800));
-
-                const mockOrderId = 'ord_' + Date.now() + Math.random().toString(36).substr(2, 9);
-
-                // Direct Mock Result
-                const result = {
-                    ok: true,
-                    orderId: mockOrderId,
-                    amount: coursePrice,
-                    orderName: selectedCourse ? selectedCourse.title : '수강신청 결제'
-                };
-
-                console.log('✅ [Payment] Order creation success:', result);
-
-                // Save order data to localStorage
-                localStorage.setItem('pendingOrder', JSON.stringify({
-                    orderId: result.orderId,
-                    amount: result.amount,
-                    orderName: result.orderName
-                }));
-
-                console.log('✅ [Payment] Redirecting to checkout page');
-                window.location.href = `pay/checkout.html?orderId=${result.orderId}&amount=${result.amount}&orderName=${encodeURIComponent(result.orderName)}`;
-
-            } catch (error) {
-                console.error('❌ [Payment] Payment button error:', error);
-                alert('이동 중 오류가 발생했습니다. (Static Mode)');
-                $btn.prop('disabled', false).text('결제하기');
-            }
-        });
-
-        function initApplyForm() {
-            $('#apply-form').on('submit', function (e) {
+            form.addEventListener('submit', async function (e) {
                 e.preventDefault();
+                errorEl.hidden = true;
 
-                if (!$('#agreeToTerms').is(':checked')) {
-                    alert('개인정보 처리방침에 동의해주세요');
+                const name = form.contact_name.value.trim();
+                const email = form.email.value.trim();
+                if (!name || !email) {
+                    errorEl.textContent = '이름과 이메일은 필수 입력입니다.';
+                    errorEl.hidden = false;
                     return;
                 }
 
-                const $submitBtn = $('#submit-btn');
-                $submitBtn.prop('disabled', true).html('<span class="spinner"></span> 제출 중...');
+                submitBtn.disabled = true;
+                submitBtn.textContent = '제출 중...';
 
-                const scheduleValue = $('#preferredSchedule').val();
-                let scheduleDate = scheduleValue;
-                let scheduleTime = '';
-
-                if (isConsultMode && scheduleValue.includes('|')) {
-                    const parts = scheduleValue.split('|');
-                    scheduleDate = parts[0];
-                    scheduleTime = parts[1] || '';
-                }
-
-                // API Call - Replace with your backend endpoint
-                const formData = {
-                    courseSlug: isInstructorMode ? 'instructor-growth' : $('#courseSlug').val(),
-                    preferredSchedule: scheduleDate,
-                    preferredTime: scheduleTime,
-                    name: $('#name').val(),
-                    email: $('#email').val(),
-                    phone: $('#phone').val(),
-                    organization: $('#organization').val(),
-                    position: $('#position').val(),
-                    agreeToTerms: true,
-                    courseTitle: selectedCourse ? selectedCourse.title : (isConsultMode ? 'Zoom 상담 신청' : '강사 성장 프로그램'),
-                    courseCategory: selectedCourse ? selectedCourse.category : '강사 성장',
-                    applicationType: isConsultMode ? 'consult' : (isInstructorMode ? 'instructor' : 'student')
+                const data = {
+                    track: form.elements['track'].value,
+                    org_name: form.org_name.value.trim() || null,
+                    contact_name: name,
+                    email: email,
+                    phone: form.phone.value.trim() || null,
+                    program_slug: form.elements['track'].value === 'institution'
+                        ? (form.program_slug.value || null) : null,
+                    headcount: form.headcount.value ? parseInt(form.headcount.value, 10) : null,
+                    preferred_date: form.preferred_date.value.trim() || null,
+                    message: form.message.value.trim() || null
                 };
 
-                // Save application to localStorage for admin viewing
-                const applicationData = {
-                    ...formData,
-                    id: Date.now().toString(),
-                    submittedAt: new Date().toISOString(),
-                    status: 'pending'
-                };
+                const result = await submitApplication(data);
 
-                // Get existing applications from localStorage
-                let applications = [];
-                try {
-                    const stored = localStorage.getItem('applications');
-                    if (stored) {
-                        applications = JSON.parse(stored);
-                    }
-                } catch (e) {
-                    console.error('Error reading applications:', e);
+                if (result.ok) {
+                    form.hidden = true;
+                    document.getElementById('apply-success').hidden = false;
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    errorEl.textContent = '제출에 실패했습니다. 잠시 후 다시 시도하시거나 irum.ceo@gmail.com으로 연락주세요.';
+                    errorEl.hidden = false;
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '신청하기';
                 }
-
-                // Add new application
-                applications.push(applicationData);
-
-                // Save back to localStorage
-                try {
-                    localStorage.setItem('applications', JSON.stringify(applications));
-                    console.log('Application saved:', applicationData);
-                } catch (e) {
-                    console.error('Error saving application:', e);
-                }
-
-                // Mock API Call for GitHub Pages
-                console.log('⚠️ [Apply] Running in static mode, mocking API call');
-
-                setTimeout(function () {
-                    console.log('✅ [Apply] Mock submission successful');
-                    $('#success-modal').addClass('active');
-                    $submitBtn.prop('disabled', false).text('신청 제출');
-                }, 1000);
-
-                /*
-                $.ajax({
-                    url: '/api/apply', // Replace with your API endpoint
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(formData),
-                    dataType: 'json',
-                    success: function (response) {
-                        if (response.success) {
-                            $('#success-modal').addClass('active');
-                        } else {
-                            alert('신청 처리 중 오류가 발생했습니다.');
-                            $submitBtn.prop('disabled', false).text('신청 제출');
-                        }
-                    },
-                    error: function () {
-                        // Fallback: Show success modal anyway (for development)
-                        console.warn('API call failed, showing success modal (development mode)');
-                        $('#success-modal').addClass('active');
-                    }
-                });
-                */
             });
-        }
+        })();
     </script>
-
-    <style>
-        .progress-steps {
-            flex-wrap: wrap;
-        }
-
-        .step-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .step-icon {
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #94a3b8 !important;
-            border: 2px solid #94a3b8 !important;
-            color: #475569 !important;
-            font-size: 1.25rem;
-            transition: all 0.3s ease;
-            /* 이모지를 회색으로 변환 */
-            filter: grayscale(100%) opacity(0.8) !important;
-        }
-
-        .step-icon.active {
-            background: #2563eb !important;
-            border-color: #2563eb !important;
-            color: #475569 !important;
-            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
-            /* 이모지를 회색으로 변환 */
-            filter: grayscale(100%) opacity(0.8) !important;
-        }
-
-        .step-title {
-            font-size: 0.75rem;
-            color: #94a3b8 !important;
-            transition: color 0.3s ease;
-        }
-
-        .step-item.active .step-title {
-            color: #2563eb !important;
-            font-weight: 600;
-        }
-
-        .step-connector {
-            width: 4rem;
-            height: 2px;
-            background: var(--border);
-            transition: background 0.3s ease;
-        }
-
-        .step-item.active~.step-connector,
-        .step-item.active+.step-connector {
-            background: #2563eb;
-        }
-
-        @media (min-width: 1024px) {
-            .form-area {
-                grid-column: 1 / 2;
-            }
-
-            .summary-card {
-                grid-column: 2 / 3;
-            }
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background-color: var(--secondary);
-            color: var(--secondary-foreground);
-            border-radius: var(--radius-full);
-            font-size: var(--font-size-xs);
-            font-weight: 500;
-        }
-
-        select.form-input {
-            padding: 0.5rem 0.75rem;
-        }
-
-        /* Datepicker 스타일 */
-        .ui-datepicker {
-            font-family: var(--font-sans);
-            font-size: var(--font-size-sm);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border);
-            padding: 0;
-        }
-
-        .ui-datepicker-header {
-            background-color: var(--primary);
-            color: white;
-            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-            padding: var(--spacing-2);
-        }
-
-        .ui-datepicker-title {
-            color: white;
-            font-weight: 600;
-        }
-
-        .ui-datepicker-prev,
-        .ui-datepicker-next {
-            cursor: pointer;
-            color: white;
-        }
-
-        .ui-datepicker-prev:hover,
-        .ui-datepicker-next:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .ui-datepicker-calendar th {
-            background-color: var(--secondary-hover);
-            color: var(--text);
-            font-weight: 600;
-            padding: var(--spacing-2);
-        }
-
-        .ui-datepicker-calendar td {
-            padding: 0;
-        }
-
-        .ui-datepicker-calendar td a {
-            padding: var(--spacing-2);
-            text-align: center;
-            display: block;
-            color: var(--text);
-            text-decoration: none;
-            border-radius: var(--radius-base);
-            transition: all var(--transition-base);
-        }
-
-        .ui-datepicker-calendar td a:hover {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .ui-datepicker-calendar td.ui-datepicker-today a {
-            background-color: var(--primary);
-            color: white;
-            font-weight: 600;
-        }
-
-        .ui-datepicker-calendar td.ui-datepicker-current-day a {
-            background-color: var(--primary-hover);
-            color: white;
-            font-weight: 700;
-        }
-
-        .ui-datepicker-calendar td.ui-state-disabled {
-            opacity: 0.3;
-        }
-
-        .ui-datepicker-buttonpane {
-            border-top: 1px solid var(--border);
-            padding: var(--spacing-2);
-            text-align: center;
-        }
-
-        .ui-datepicker-buttonpane button {
-            padding: var(--spacing-2) var(--spacing-4);
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: var(--radius-base);
-            cursor: pointer;
-            font-size: var(--font-size-sm);
-            transition: all var(--transition-base);
-        }
-
-        .ui-datepicker-buttonpane button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        #preferredSchedule {
-            cursor: pointer;
-        }
-
-        #preferredSchedule:focus {
-            cursor: text;
-        }
-
-        /* 신청 정보 확인 디자인 */
-        .confirmation-summary {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .confirmation-section {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 1px solid #e2e8f0;
-        }
-
-        .confirmation-section-header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1.25rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 2px solid #e2e8f0;
-        }
-
-        .section-icon {
-            font-size: 1.25rem;
-            width: 2rem;
-            height: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .section-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #1e293b;
-            margin: 0;
-        }
-
-        .confirmation-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.875rem 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .confirmation-item:last-child {
-            border-bottom: none;
-        }
-
-        .confirmation-label {
-            font-size: 0.875rem;
-            color: #64748b;
-            font-weight: 500;
-            min-width: 100px;
-        }
-
-        .confirmation-value {
-            font-size: 0.9375rem;
-            color: #1e293b;
-            font-weight: 500;
-            text-align: right;
-            flex: 1;
-            margin-left: 1rem;
-        }
-
-        .confirmation-agreement {
-            margin-top: 1rem;
-            padding: 1.25rem;
-            background: #f1f5f9;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .agreement-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .agreement-checkbox input[type="checkbox"] {
-            width: 1.125rem;
-            height: 1.125rem;
-            cursor: pointer;
-            accent-color: #87CEEB;
-        }
-
-        .agreement-checkbox label {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            font-size: 0.875rem;
-            color: #475569;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .checkbox-label {
-            font-weight: 500;
-        }
-
-        .required-mark {
-            color: #ef4444;
-            font-weight: 600;
-        }
-
-        @media (max-width: 640px) {
-            .confirmation-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
-
-            .confirmation-value {
-                text-align: left;
-                margin-left: 0;
-            }
-
-            .confirmation-label {
-                min-width: auto;
-            }
-        }
-    </style>
 </body>
 
 </html>
