@@ -1,3 +1,5 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+
 /* ============================================
    CSS Variables (Theme)
    ============================================ */
@@ -49,7 +51,7 @@
     --spacing-24: 6rem;
     
     /* Typography */
-    --font-sans: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-sans: 'Pretendard Variable', Pretendard, 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --font-size-xs: 0.75rem;
     --font-size-sm: 0.875rem;
     --font-size-base: 1rem;
@@ -458,6 +460,12 @@ body {
     z-index: 1;
 }
 
+@media (min-width: 1024px) {
+    .section {
+        padding: var(--spacing-20) 0;
+    }
+}
+
 /* Section content alignment */
 .section .container {
     text-align: center;
@@ -701,15 +709,17 @@ body {
    ============================================ */
 .card {
     background-color: var(--surface);
+    border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     padding: var(--spacing-6);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-sm);
     transition: all var(--transition-slow);
 }
 
 .card:hover {
-    box-shadow: var(--shadow-xl);
-    transform: translateY(-8px);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
 }
 
 .card-header {
@@ -1769,4 +1779,15 @@ select.form-input {
     .hidden-sm {
         display: none;
     }
+}
+
+/* ============================================
+   Typography refinement (2026 개편)
+   ============================================ */
+h1, h2, h3, h4,
+.section-title,
+.page-hero-title,
+.card-title {
+    letter-spacing: -0.02em;
+    font-weight: 700;
 }
