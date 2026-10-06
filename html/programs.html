@@ -134,10 +134,14 @@
 
     <!-- Scripts -->
     <script src="../js/courses-data.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-client.js"></script>
+    <script src="../js/content-client.js"></script>
     <script src="../js/components.js"></script>
     <script>
         (function () {
-            const GROUPS = [
+            // 정적 폴백 (DB 조회 실패 시 사용)
+            const FALLBACK_GROUPS = [
                 {
                     title: '직무 실무형',
                     desc: '직무별 업무에 AI를 바로 적용하는 실습 중심 과정',
@@ -157,31 +161,43 @@
 
             const container = document.getElementById('program-groups');
 
-            GROUPS.forEach(function (group) {
-                const section = document.createElement('div');
-                section.className = 'program-group reveal-up';
+            function render(groups, courses) {
+                const bySlug = {};
+                courses.forEach(function (c) { bySlug[c.slug] = c; });
+                container.innerHTML = '';
 
-                let cards = '';
-                group.slugs.forEach(function (slug) {
-                    const c = getCourseBySlug(slug);
-                    if (!c) return;
-                    cards +=
-                        '<a class="card program-card" href="courses/' + c.slug + '.html">' +
-                        '<span class="program-category">' + c.category + '</span>' +
-                        '<h4 class="card-title">' + c.title + '</h4>' +
-                        '<p class="card-description">' + c.shortDescription + '</p>' +
-                        '<span class="program-meta">' + c.durationLabel + ' · ' + c.formatLabel + '</span>' +
-                        '</a>';
+                groups.forEach(function (group) {
+                    const section = document.createElement('div');
+                    section.className = 'program-group reveal-up revealed';
+
+                    let cards = '';
+                    group.slugs.forEach(function (slug) {
+                        const c = bySlug[slug];
+                        if (!c) return;
+                        cards +=
+                            '<a class="card program-card" href="courses/' + encodeURIComponent(c.slug) + '.html">' +
+                            '<span class="program-category">' + escHtml(c.category) + '</span>' +
+                            '<h4 class="card-title">' + escHtml(c.title) + '</h4>' +
+                            '<p class="card-description">' + escHtml(c.shortDescription) + '</p>' +
+                            '<span class="program-meta">' + escHtml(c.durationLabel) + ' · ' + escHtml(c.formatLabel) + '</span>' +
+                            '</a>';
+                    });
+
+                    section.innerHTML =
+                        '<div class="program-group-header">' +
+                        '<h3>' + escHtml(group.title) + '</h3>' +
+                        '<p>' + escHtml(group.desc) + '</p>' +
+                        '</div>' +
+                        '<div class="program-card-grid">' + cards + '</div>';
+
+                    container.appendChild(section);
                 });
+            }
 
-                section.innerHTML =
-                    '<div class="program-group-header">' +
-                    '<h3>' + group.title + '</h3>' +
-                    '<p>' + group.desc + '</p>' +
-                    '</div>' +
-                    '<div class="program-card-grid">' + cards + '</div>';
-
-                container.appendChild(section);
+            // 1) 정적 데이터로 즉시 렌더 → 2) DB 값이 오면 교체
+            render(FALLBACK_GROUPS, COURSES_DATA);
+            Promise.all([fetchCourseGroups(), fetchCourses()]).then(function (r) {
+                if (r[0] && r[1]) render(r[0], r[1]);
             });
         })();
     </script>

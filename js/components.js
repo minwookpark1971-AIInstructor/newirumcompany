@@ -17,7 +17,7 @@ function generateHeader() {
             </a>
 
             <!-- Desktop Navigation -->
-            <nav class="desktop-nav">
+            <nav class="desktop-nav" data-site="nav.desktop">
                 <a href="${p.programsUrl}" class="nav-link">대학·기관 교육</a>
                 <a href="${p.workshopUrl}" class="nav-link">강사 워크샵</a>
                 <a href="${p.contactUrl}" class="nav-link">문의하기</a>
@@ -25,7 +25,7 @@ function generateHeader() {
 
             <!-- Desktop Actions -->
             <div class="desktop-actions">
-                <a href="${p.applyUrl}" class="btn btn-primary btn-sm">교육 신청</a>
+                <a href="${p.applyUrl}" class="btn btn-primary btn-sm" data-site="nav.cta">교육 신청</a>
             </div>
 
             <!-- Mobile Menu Button -->
@@ -37,12 +37,12 @@ function generateHeader() {
         </div>
 
         <!-- Mobile Navigation -->
-        <nav class="mobile-nav" id="mobile-nav">
+        <nav class="mobile-nav" id="mobile-nav" data-site="nav.mobile">
             <a href="${p.programsUrl}" class="mobile-nav-link">대학·기관 교육</a>
             <a href="${p.workshopUrl}" class="mobile-nav-link">강사 워크샵</a>
             <a href="${p.contactUrl}" class="mobile-nav-link">문의하기</a>
             <div class="mobile-actions">
-                <a href="${p.applyUrl}" class="btn btn-primary btn-sm btn-block">교육 신청</a>
+                <a href="${p.applyUrl}" class="btn btn-primary btn-sm btn-block" data-site="nav.cta">교육 신청</a>
             </div>
         </nav>
     </div>
@@ -65,8 +65,8 @@ function generateFooter() {
     <div class="container">
         ${!isCourseDetail ? `
         <div class="footer-cta">
-            <h3 class="footer-cta-title">AI 교육, 이룸아카데미와 시작하세요</h3>
-            <p class="footer-cta-description">
+            <h3 class="footer-cta-title" data-site="footer.cta_title">AI 교육, 이룸아카데미와 시작하세요</h3>
+            <p class="footer-cta-description" data-site="footer.cta_description">
                 대학·기관 맞춤 교육부터 강사 집중 워크샵까지, 지금 신청하세요.
             </p>
             <div class="footer-cta-buttons">
@@ -79,8 +79,8 @@ function generateFooter() {
         <div class="footer-bottom">
             <p class="footer-copyright">© ${currentYear} Irum Academy. All rights reserved.</p>
             <div class="footer-contact">
-                <a href="mailto:irum.ceo@gmail.com">irum.ceo@gmail.com</a>
-                <span>서울특별시 강남구 도산대로 54길 41</span>
+                <a href="mailto:irum.ceo@gmail.com" data-site="footer.email">irum.ceo@gmail.com</a>
+                <span data-site="footer.address">서울특별시 강남구 도산대로 54길 41</span>
             </div>
             <div class="footer-legal">
                 <a href="${p.privacyUrl}">개인정보처리방침</a>
@@ -111,6 +111,7 @@ function getPathInfo() {
     }
 
     return {
+        rootUrl: toRoot,
         homeUrl: toRoot + 'index.html',
         programsUrl: toHtml + 'programs.html',
         workshopUrl: toHtml + 'workshop.html',
@@ -169,6 +170,82 @@ function vanillaRevealInit() {
     targets.forEach(function (el) { observer.observe(el); });
 }
 
+// Load a script once, resolving when it has executed (or failed — callers fall back to static HTML)
+function loadScriptOnce(src) {
+    return new Promise(function (resolve) {
+        const s = document.createElement('script');
+        s.src = src;
+        s.onload = resolve;
+        s.onerror = resolve;
+        document.head.appendChild(s);
+    });
+}
+
+// 콘텐츠 클라이언트가 페이지에 없으면 동적으로 로드한다 (정적 페이지 수정 없이 DB 연동)
+async function ensureContentClient() {
+    if (typeof fetchSiteSettings === 'function') return true;
+    const p = getPathInfo();
+    try {
+        if (typeof supabaseClient === 'undefined') {
+            if (!window.supabase) {
+                await loadScriptOnce('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
+            }
+            if (!window.supabase) return false;
+            await loadScriptOnce(p.rootUrl + 'js/supabase-client.js');
+        }
+        await loadScriptOnce(p.rootUrl + 'js/content-client.js');
+    } catch (e) {
+        return false;
+    }
+    return typeof fetchSiteSettings === 'function';
+}
+
+// site_settings(nav, footer)를 헤더·푸터에 반영. 실패 시 정적 문구 유지.
+async function applySiteSettings() {
+    if (!(await ensureContentClient())) return;
+    const s = await fetchSiteSettings();
+    if (!s) return;
+    const p = getPathInfo();
+    const q = function (sel) { return document.querySelectorAll('[data-site="' + sel + '"]'); };
+    const toUrl = function (href) {
+        const h = safeHref(href);
+        return /^(https?:|#)/i.test(h) ? h : p.rootUrl + h.replace(/^\//, '');
+    };
+
+    const nav = s.nav;
+    if (nav && Array.isArray(nav.items)) {
+        q('nav.desktop').forEach(function (el) {
+            el.innerHTML = nav.items.map(function (i) {
+                return '<a href="' + escHtml(toUrl(i.href)) + '" class="nav-link">' + escHtml(i.label) + '</a>';
+            }).join('');
+        });
+        q('nav.mobile').forEach(function (el) {
+            const actions = el.querySelector('.mobile-actions');
+            el.querySelectorAll('.mobile-nav-link').forEach(function (a) { a.remove(); });
+            nav.items.forEach(function (i) {
+                const a = document.createElement('a');
+                a.className = 'mobile-nav-link';
+                a.href = toUrl(i.href);
+                a.textContent = i.label;
+                el.insertBefore(a, actions);
+            });
+        });
+    }
+    if (nav && nav.cta_label) {
+        q('nav.cta').forEach(function (el) { el.textContent = nav.cta_label; });
+    }
+
+    const f = s.footer;
+    if (f) {
+        q('footer.cta_title').forEach(function (el) { if (f.cta_title) el.textContent = f.cta_title; });
+        q('footer.cta_description').forEach(function (el) { if (f.cta_description) el.textContent = f.cta_description; });
+        q('footer.email').forEach(function (el) {
+            if (f.email) { el.textContent = f.email; el.href = 'mailto:' + f.email; }
+        });
+        q('footer.address').forEach(function (el) { if (f.address) el.textContent = f.address; });
+    }
+}
+
 // Load header and footer
 function loadComponents() {
     const headerContainer = document.getElementById('header-container');
@@ -192,6 +269,8 @@ function loadComponents() {
     if (typeof initRevealAnimations !== 'function') {
         vanillaRevealInit();
     }
+
+    applySiteSettings();
 }
 
 // Auto-load on DOM ready

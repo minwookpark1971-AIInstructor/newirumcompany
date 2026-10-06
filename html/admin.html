@@ -176,6 +176,13 @@
         }
 
         .form-error { color: var(--danger); font-size: var(--font-size-sm); margin-bottom: var(--spacing-4); }
+            .admin-note { color: #666; font-size: 14px; margin: 0 0 12px; }
+        .editor-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+        .editor-bar select { min-width: 260px; max-width: 100%; }
+        .editor-text { width: 100%; min-height: 360px; font-family: ui-monospace, Consolas, monospace; font-size: 13px; line-height: 1.5; white-space: pre; }
+        .editor-sub { font-size: 15px; margin: 24px 0 8px; }
+        .rev-row { display: flex; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid #e5e5e5; font-size: 13px; flex-wrap: wrap; }
+        .rev-row span { flex: 1; min-width: 200px; }
     </style>
 </head>
 
@@ -210,9 +217,22 @@
         <div class="admin-tabs">
             <button class="admin-tab active" data-tab="applications">교육 신청</button>
             <button class="admin-tab" data-tab="inquiries">문의</button>
+            <button class="admin-tab" data-tab="editor">사이트 편집</button>
         </div>
 
-        <div class="admin-toolbar">
+        <div id="editor-panel" hidden>
+            <p class="admin-note">메인 문구·헤더/푸터·프로그램 데이터를 JSON으로 편집합니다. 저장하면 사이트에 바로 반영되고, 이전 값은 변경 이력에 남아 되돌릴 수 있습니다.</p>
+            <div class="editor-bar">
+                <select id="editor-item"></select>
+                <button class="btn btn-primary btn-sm" id="editor-save">저장</button>
+                <span class="admin-count" id="editor-msg"></span>
+            </div>
+            <textarea id="editor-text" class="form-input editor-text" spellcheck="false"></textarea>
+            <h3 class="editor-sub">변경 이력 (최근 10건)</h3>
+            <div id="editor-revs"></div>
+        </div>
+
+        <div class="admin-toolbar" id="list-toolbar">
             <select id="track-filter">
                 <option value="">전체 유형</option>
                 <option value="institution">대학·기관 교육</option>
@@ -229,7 +249,7 @@
             <span class="admin-count" id="row-count"></span>
         </div>
 
-        <div class="admin-table-wrap">
+        <div class="admin-table-wrap" id="list-wrap">
             <table class="admin-table" id="data-table"></table>
             <div class="admin-empty" id="empty-msg" hidden>데이터가 없습니다.</div>
         </div>
@@ -256,6 +276,7 @@
             async function checkSession() {
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 if (session) {
+                    if (!(await verifyAdmin())) return;
                     showAdmin(session.user.email);
                 } else {
                     loginView.hidden = false;
@@ -276,8 +297,22 @@
                     errorEl.hidden = false;
                     return;
                 }
+                if (!(await verifyAdmin())) return;
                 showAdmin(data.user.email);
             });
+
+            // 관리자 등록 여부 확인 (public.is_admin() RPC). 아니면 로그아웃시키고 안내.
+            async function verifyAdmin() {
+                const { data, error } = await supabaseClient.rpc('is_admin');
+                if (!error && data === true) return true;
+                await supabaseClient.auth.signOut();
+                const errorEl = document.getElementById('login-error');
+                errorEl.textContent = '관리자로 등록되지 않은 계정입니다.';
+                errorEl.hidden = false;
+                loginView.hidden = false;
+                adminView.hidden = true;
+                return false;
+            }
 
             document.getElementById('logout-btn').addEventListener('click', async function () {
                 await supabaseClient.auth.signOut();
@@ -293,10 +328,10 @@
 
             // ---------- Data ----------
             async function loadData() {
-                const table = currentTab;
+                const table = 'site_' + currentTab;
                 let query = supabaseClient.from(table).select('*').order('created_at', { ascending: false });
 
-                if (table === 'applications' && trackFilter.value) {
+                if (currentTab === 'applications' && trackFilter.value) {
                     query = query.eq('track', trackFilter.value);
                 }
                 const statusFilter = document.getElementById('status-filter').value;
@@ -385,7 +420,7 @@
 
                 tableEl.querySelectorAll('.status-select').forEach(function (sel) {
                     sel.addEventListener('change', async function () {
-                        const { error } = await supabaseClient.from(currentTab)
+                        const { error } = await supabaseClient.from('site_' + currentTab)
                             .update({ status: sel.value }).eq('id', sel.dataset.id);
                         if (error) {
                             alert('상태 변경 실패: ' + error.message);
@@ -415,12 +450,114 @@
                 URL.revokeObjectURL(a.href);
             });
 
+            // ---------- Site editor ----------
+            // content/settings 는 value 컬럼, courses 는 행 전체를 JSON 으로 편집. 권한은 RLS(관리자만 쓰기)가 담보.
+            let editorItems = [];
+            const editorSel = document.getElementById('editor-item');
+            const editorText = document.getElementById('editor-text');
+            const editorMsg = document.getElementById('editor-msg');
+
+            function setMsg(t, bad) {
+                editorMsg.textContent = t;
+                editorMsg.style.color = bad ? '#c0392b' : '';
+            }
+
+            async function loadEditorItems() {
+                const res = await Promise.all([
+                    supabaseClient.from('site_content').select('key'),
+                    supabaseClient.from('site_settings').select('key'),
+                    supabaseClient.from('site_courses').select('slug,title').order('sort_order')
+                ]);
+                editorItems = [];
+                (res[0].data || []).forEach(function (r) { editorItems.push({ table: 'site_content', pk: 'key', id: r.key, label: '메인 문구 · ' + r.key }); });
+                (res[1].data || []).forEach(function (r) { editorItems.push({ table: 'site_settings', pk: 'key', id: r.key, label: '설정 · ' + r.key }); });
+                (res[2].data || []).forEach(function (r) { editorItems.push({ table: 'site_courses', pk: 'slug', id: r.slug, label: '프로그램 · ' + r.title }); });
+                editorSel.innerHTML = editorItems.map(function (it, i) {
+                    return '<option value="' + i + '">' + esc(it.label) + '</option>';
+                }).join('');
+                if (editorItems.length) loadEditorValue(); else editorText.value = '';
+            }
+
+            function currentItem() { return editorItems[Number(editorSel.value)]; }
+
+            function stripManaged(row) {
+                const o = Object.assign({}, row);
+                delete o.updated_at;
+                delete o.updated_by;
+                return o;
+            }
+
+            async function loadEditorValue() {
+                const it = currentItem();
+                if (!it) return;
+                setMsg('');
+                const r = await supabaseClient.from(it.table).select('*').eq(it.pk, it.id).maybeSingle();
+                if (r.error || !r.data) { setMsg('불러오기 실패: ' + (r.error ? r.error.message : '없음'), true); return; }
+                const val = it.table === 'site_courses' ? stripManaged(r.data) : r.data.value;
+                editorText.value = JSON.stringify(val, null, 2);
+                loadRevisions(it);
+            }
+
+            function looksUnsafe(v) {
+                if (typeof v === 'string') {
+                    return /<\s*\/?\s*(script|iframe|object|embed|style|link|meta)\b/i.test(v) ||
+                        /\bon[a-z]+\s*=/i.test(v) || /javascript\s*:/i.test(v);
+                }
+                if (Array.isArray(v)) return v.some(looksUnsafe);
+                if (v && typeof v === 'object') return Object.keys(v).some(function (k) { return looksUnsafe(v[k]); });
+                return false;
+            }
+
+            document.getElementById('editor-save').addEventListener('click', async function () {
+                const it = currentItem();
+                if (!it) return;
+                let val;
+                try { val = JSON.parse(editorText.value); } catch (e) { setMsg('JSON 형식 오류: ' + e.message, true); return; }
+                if (looksUnsafe(val)) { setMsg('스크립트/위험한 HTML 은 저장할 수 없습니다.', true); return; }
+                if (it.table === 'site_courses' && val.slug !== it.id) { setMsg('slug 는 바꿀 수 없습니다.', true); return; }
+                const row = it.table === 'site_courses' ? val : { key: it.id, value: val };
+                const r = await supabaseClient.from(it.table).upsert(row);
+                if (r.error) { setMsg('저장 실패: ' + r.error.message, true); return; }
+                setMsg('저장되었습니다 ' + new Date().toLocaleTimeString());
+                loadRevisions(it);
+            });
+
+            editorSel.addEventListener('change', loadEditorValue);
+
+            async function loadRevisions(it) {
+                const box = document.getElementById('editor-revs');
+                const r = await supabaseClient.from('site_revisions')
+                    .select('id,old_value,created_at').eq('table_name', it.table).eq('row_key', it.id)
+                    .order('id', { ascending: false }).limit(10);
+                const data = r.data;
+                if (r.error || !data || !data.length) { box.innerHTML = '<p class="admin-note">이력이 없습니다.</p>'; return; }
+                box.innerHTML = data.map(function (x) {
+                    return '<div class="rev-row"><span>' + fmtDate(x.created_at) + (x.old_value ? '' : ' · 최초 생성') + '</span>' +
+                        (x.old_value ? '<button class="btn btn-outline btn-sm" data-rev="' + x.id + '">이 이전 값으로 되돌리기</button>' : '') + '</div>';
+                }).join('');
+                box.querySelectorAll('[data-rev]').forEach(function (btn) {
+                    btn.addEventListener('click', async function () {
+                        const rev = data.find(function (x) { return String(x.id) === btn.dataset.rev; });
+                        if (!rev || !confirm('이 시점 이전 값으로 되돌릴까요?')) return;
+                        const r2 = await supabaseClient.from(it.table).upsert(rev.old_value);
+                        if (r2.error) { setMsg('되돌리기 실패: ' + r2.error.message, true); return; }
+                        setMsg('되돌렸습니다');
+                        loadEditorValue();
+                    });
+                });
+            }
+
             // ---------- Tabs & Filters ----------
             document.querySelectorAll('.admin-tab').forEach(function (tab) {
                 tab.addEventListener('click', function () {
                     document.querySelectorAll('.admin-tab').forEach(function (t) { t.classList.remove('active'); });
                     tab.classList.add('active');
                     currentTab = tab.dataset.tab;
+                    const isEditor = currentTab === 'editor';
+                    document.getElementById('editor-panel').hidden = !isEditor;
+                    document.getElementById('list-toolbar').hidden = isEditor;
+                    document.getElementById('list-wrap').hidden = isEditor;
+                    if (isEditor) { loadEditorItems(); return; }
                     trackFilter.style.display = currentTab === 'applications' ? '' : 'none';
                     loadData();
                 });

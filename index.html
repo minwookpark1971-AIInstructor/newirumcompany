@@ -21,8 +21,8 @@
         <iframe src="https://my.spline.design/aigreymarketingbanner-2a0D8In7xm5RTtf4m4cGsvAV/"
             title="AI 3D 배경" loading="lazy" class="home-hero-bg"></iframe>
         <div class="container home-hero-content">
-            <h1>AI 리터러시를 넘어,<br>경쟁력이 되는 실무교육</h1>
-            <p>이룸아카데미는 대학·기관 맞춤 AI 교육과<br class="hidden-sm">강사를 위한 집중 워크샵을 만듭니다.</p>
+            <h1 data-content="hero.title">AI 리터러시를 넘어,<br>경쟁력이 되는 실무교육</h1>
+            <p data-content="hero.subtitle">이룸아카데미는 대학·기관 맞춤 AI 교육과<br class="hidden-sm">강사를 위한 집중 워크샵을 만듭니다.</p>
         </div>
     </section>
 
@@ -30,7 +30,7 @@
     <main class="main-content">
         <section class="section">
             <div class="container">
-                <div class="track-split stagger-container">
+                <div class="track-split stagger-container" data-content="tracks">
                     <a href="html/programs.html" class="track-card stagger-item">
                         <span class="track-card-label">FOR UNIVERSITIES &amp; ORGANIZATIONS</span>
                         <h2>대학·기관 교육</h2>
@@ -53,9 +53,9 @@
         <section class="section">
             <div class="container">
                 <div class="text-center reveal-up">
-                    <h2 class="section-title">왜 이룸아카데미인가</h2>
+                    <h2 class="section-title" data-content="features.title">왜 이룸아카데미인가</h2>
                 </div>
-                <div class="feature-grid-3 stagger-container">
+                <div class="feature-grid-3 stagger-container" data-content="features.items">
                     <div class="card stagger-item">
                         <h3 class="card-title">실습 중심</h3>
                         <p class="card-description">
@@ -82,10 +82,10 @@
         <section class="section">
             <div class="container">
                 <div class="text-center reveal-up">
-                    <h2 class="section-title">진행 프로세스</h2>
-                    <p class="section-description">신청부터 교육까지, 간단한 3단계로 진행됩니다.</p>
+                    <h2 class="section-title" data-content="process.title">진행 프로세스</h2>
+                    <p class="section-description" data-content="process.subtitle">신청부터 교육까지, 간단한 3단계로 진행됩니다.</p>
                 </div>
-                <div class="process-steps stagger-container">
+                <div class="process-steps stagger-container" data-content="process.steps">
                     <div class="process-step stagger-item">
                         <span class="process-num">1</span>
                         <h3>신청·상담</h3>
@@ -111,6 +111,10 @@
 
     <!-- Scripts -->
     <script src="js/components.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/content-client.js"></script>
+    <script src="js/home.js"></script>
 </body>
 
 </html>
