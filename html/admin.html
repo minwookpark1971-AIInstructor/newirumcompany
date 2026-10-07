@@ -190,18 +190,11 @@
     <!-- Login View -->
     <div id="login-view" class="admin-login" hidden>
         <h1>관리자 로그인</h1>
-        <form id="login-form">
-            <div class="form-group">
-                <label class="form-label" for="login-email">이메일</label>
-                <input type="email" class="form-input" id="login-email" required autocomplete="username">
-            </div>
-            <div class="form-group">
-                <label class="form-label" for="login-password">비밀번호</label>
-                <input type="password" class="form-input" id="login-password" required autocomplete="current-password">
-            </div>
+        <div id="login-form">
+            <p class="admin-note">관리자 계정(Google)으로 로그인해 주세요.</p>
             <p class="form-error" id="login-error" hidden></p>
-            <button type="submit" class="btn btn-primary btn-block">로그인</button>
-        </form>
+            <button type="button" class="btn btn-primary btn-block" id="google-login">Google로 로그인</button>
+        </div>
     </div>
 
     <!-- Admin View -->
@@ -284,21 +277,18 @@
                 }
             }
 
-            document.getElementById('login-form').addEventListener('submit', async function (e) {
-                e.preventDefault();
+            // 이 프로젝트는 이메일 로그인이 꺼져 있고 Google 로그인만 쓴다. 로그인 후 이 페이지로 돌아와 checkSession 이 이어서 처리한다.
+            document.getElementById('google-login').addEventListener('click', async function () {
                 const errorEl = document.getElementById('login-error');
                 errorEl.hidden = true;
-                const { data, error } = await supabaseClient.auth.signInWithPassword({
-                    email: document.getElementById('login-email').value.trim(),
-                    password: document.getElementById('login-password').value
+                const { error } = await supabaseClient.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: { redirectTo: location.origin + location.pathname }
                 });
                 if (error) {
                     errorEl.textContent = '로그인에 실패했습니다: ' + error.message;
                     errorEl.hidden = false;
-                    return;
                 }
-                if (!(await verifyAdmin())) return;
-                showAdmin(data.user.email);
             });
 
             // 관리자 등록 여부 확인 (public.is_admin() RPC). 아니면 로그아웃시키고 안내.
