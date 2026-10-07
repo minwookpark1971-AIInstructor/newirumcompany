@@ -18,7 +18,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLI
  * @returns {Promise<{ok:boolean, error?:string}>}
  */
 async function submitApplication(data) {
-    const { error } = await supabaseClient.from('applications').insert(data);
+    const { error } = await supabaseClient.from('site_applications').insert(data);
     if (error) {
         console.error('신청 제출 실패:', error.message);
         return { ok: false, error: error.message };
@@ -32,7 +32,7 @@ async function submitApplication(data) {
  * @returns {Promise<{ok:boolean, error?:string}>}
  */
 async function submitInquiry(data) {
-    const { error } = await supabaseClient.from('inquiries').insert(data);
+    const { error } = await supabaseClient.from('site_inquiries').insert(data);
     if (error) {
         console.error('문의 제출 실패:', error.message);
         return { ok: false, error: error.message };

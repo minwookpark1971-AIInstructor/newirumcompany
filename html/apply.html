@@ -118,7 +118,9 @@
 
     <!-- Scripts -->
     <script src="../js/courses-data.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase-client.js"></script>
+    <script src="../js/content-client.js"></script>
     <script src="../js/components.js"></script>
     <script>
         (function () {
@@ -130,12 +132,19 @@
             const submitBtn = document.getElementById('submit-btn');
 
             // 프로그램 옵션 채우기
-            COURSES_DATA.forEach(function (c) {
-                const opt = document.createElement('option');
-                opt.value = c.slug;
-                opt.textContent = c.title;
-                programSelect.appendChild(opt);
-            });
+            function fillPrograms(list) {
+                const keep = programSelect.value;
+                while (programSelect.options.length > 1) programSelect.remove(1);
+                list.forEach(function (c) {
+                    const opt = document.createElement('option');
+                    opt.value = c.slug;
+                    opt.textContent = c.title;
+                    programSelect.appendChild(opt);
+                });
+                if (keep) programSelect.value = keep;
+            }
+            fillPrograms(COURSES_DATA);
+            fetchCourses().then(function (list) { if (list) fillPrograms(list); });
 
             // URL 파라미터 반영 (?track=institution&program=slug)
             const params = new URLSearchParams(window.location.search);
