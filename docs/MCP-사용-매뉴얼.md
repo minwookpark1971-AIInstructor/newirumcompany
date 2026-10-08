@@ -46,47 +46,54 @@
 
 ### 2-1. 메인 페이지 문구 (irumcompany.co.kr)
 
-메인은 위에서 아래로 아래 구역으로 구성되며, 각 구역이 DB 키 하나에 대응합니다.
+메인은 위에서 아래로 아래 구역으로 구성되며, 각 구역이 DB 키 하나에 대응합니다. (2026-10-08 메인 재구성)
+**값이 없는 구역은 사이트에 표시되지 않고, 값을 넣으면 나타납니다**(상단 메뉴도 자동 반영).
 
 | 구역 | 키 | 바꿀 수 있는 것 |
 |---|---|---|
-| 커버 제목·부제 | `home.hero` | 1번 슬라이드의 제목·부제 (`\n` 은 줄바꿈) |
-| 커버 태그·버튼 | `home.hero_meta` | 태그 칩(1~8개), 버튼 2개의 문구·링크 |
-| 커버 슬라이더 | `home.slides` | 슬라이드(1~6장)의 라벨·제목·설명·이미지·링크 |
-| 이번 기수 핵심 5 | `home.highlights` | 핵심 문장(1~8개) |
-| 2트랙 카드 | `home.cards` | 코스 카드(1~4개): 이름·상태 배지·소개·회차·수강료·산출물·링크 |
-| 커리큘럼 표 | `home.timeline` | 회차 표(1~24행): 회차·일정·주제·코스·★ 강조 |
-| 손에 남는 것 | `home.outcomes` | 제목·카드(1~6개) |
-| 운영 방식 표 | `home.system` | 표 제목·행(1~12개) |
-| 강사 소개 | `home.instructor`, `home.metrics` | 이름·소개·신뢰 지표 4칸 (**값을 넣으면 섹션이 나타남**) |
-| 수강 안내 | `home.enrollment` | 일정·수강료 표·입금 계좌·안내 문구 |
-| FAQ | `home.faq` | 질문·답변(1~20개) (**값을 넣으면 섹션이 나타남**) |
+| 히어로 문구 | `home.hero` | 제목(2줄)·부제(2줄) (`
+` 은 줄바꿈) |
+| 히어로 버튼 | `home.hero_meta` | 버튼 2개(`cta1`=강의 신청, `cta2`=기관 제안 요청)의 문구·링크 |
+| 히어로 배경 사진 | `home.hero_images` | 사진 1~5장(`src`, `alt`) — 6초 간격 크로스페이드 |
+| 함께한 기관(로고 롤링) | `home.clients` | 기관 최대 30개: `name`, `src`(로고), `href` |
+| 출강 사례 | `home.cases` | 카드 최대 12장: `title`, `image`, `tags`(2개), `href` + `more_href`(전체보기) |
+| 강의영역 6개 탭 | `home.areas` | 영역 최대 6개: `name`, `desc`, `audience`, `courses`(3개), `output`, `images`(3장) — 비우면 기본 문구 6개 표시 |
+| 숫자로 보는 이룸 | `home.metrics` | 4칸 `{n, label}` — `n` 의 숫자 부분이 카운트업됩니다(예: `11년+`) |
+| 인사이트 | `home.insights` | 카드 최대 12장: `title`, `tag`, `image`, `href` + `more_href` |
+| 강사 소개 | `home.instructor` | 이름·역할·소개(값을 넣으면 섹션 표시) |
+| FAQ | `home.faq` | 질문·답변(1~20개)(값을 넣으면 섹션 표시) |
+| 하단 CTA | `home.cta` | 제목·본문·버튼 2개(`primary`=개인 수강 신청, `secondary`=기관 제안 요청) |
+| 상담 버튼·SNS | settings `footer` | 기존 필드에 `kakao_url`(https), `sns[{label,href}]` 추가 시 FAB·푸터에 반영 |
 | 탭 제목·설명 | settings `seo` | 브라우저 탭 제목, 검색 설명 |
+
+모집·진행 중 과정 카드는 이 표가 아니라 아래 **2-1b 과정(기수) 관리**에서 바꿉니다.
 
 이렇게 말하세요:
 
 - "메인 첫 화면 제목을 '○○○'로 바꿔줘"
-- "히어로 태그 2번째를 '매주 금 20~22시'로 바꿔줘"
-- "커버 슬라이드 2번째 설명을 ○○로 바꿔줘"
-- "B코스 카드의 상태를 '마감'으로 바꿔줘" (`status`, `tone` 은 `live|open|closed`)
-- "커리큘럼 표에 B 4회차(11/13)를 추가해줘"
-- "수강료를 A코스 20만원으로 바꿔줘"
+- "히어로 배경 사진을 images/hero/1.webp … 5.webp 로 설정해줘" (사진 파일은 Claude Code로 사이트에 먼저 올려야 합니다)
+- "함께한 기관에 ○○대학, ○○공사를 추가해줘" (로고 사용 허가를 확인한 기관만)
+- "출강 사례에 '○○ 기관 AI 업무자동화 4일 과정'(태그: 공공기관, 업무자동화)을 추가해줘"
+- "강의영역 3번 '바이브코딩' 설명을 ○○로 바꿔줘"
+- "숫자 4칸을 11년+ / 50곳+ / 22개교 / 30개+ 로 넣어줘" (사실 확인 후)
+- "인사이트에 ax 웹진 기사 링크를 추가해줘"
+- "하단 CTA 제목을 ○○로 바꿔줘"
+- "상담 버튼을 카카오 채널(https://…)로 연결해줘"
 - "FAQ에 '다시보기 되나요?' 질문을 추가해줘" (답변 내용을 함께 알려주세요)
-- "강사 소개를 추가해줘" (이름·소개를 함께 알려주세요)
 
 규칙:
 
-- **개수는 자유롭게 늘리고 줄일 수 있습니다**(위 표의 범위 안에서). 번호(01, 02…)와 「다음 장 →」 링크는 자동으로 붙습니다.
-- 강사·FAQ 구역은 DB 값이 없으면 사이트에 **표시되지 않습니다**. 값을 넣으면 나타나고, 상단 메뉴에도 자동으로 추가됩니다.
-- 슬라이드 이미지는 사이트 안의 파일 경로(`images/cover/…`) 또는 `https://` 주소만 가능합니다. 새 이미지 파일은 Claude Code로 사이트에 올려야 합니다.
+- **개수는 위 표의 범위 안에서 자유롭게 늘리고 줄일 수 있습니다.**
+- 이미지는 사이트 안의 파일 경로(`images/…`) 또는 `https://` 주소만 가능합니다. 링크는 상대경로 또는 `http(s)` 만 가능합니다. 새 이미지 파일은 Claude Code로 사이트에 올려야 합니다.
 - 줄바꿈은 가능합니다 ("두 줄로" 라고 말하면 됩니다).
 - 수정 시에는 해당 키의 **전체 값**을 다시 보냅니다. 먼저 현재 값을 확인한 뒤 바꿉니다.
+- 예전 키 `home.slides`, `home.highlights`, `home.cards`, `home.timeline`, `home.outcomes`, `home.system`, `home.enrollment`, `home.tracks`, `home.features`, `home.process` 는 **더 이상 메인에서 읽지 않습니다**(DB에는 보관).
 
-> 참고: `home.tracks`, `home.features`, `home.process`, `home.learn` 은 보조 사이트(newirumcompany, GitHub Pages)용 키입니다. irumcompany.co.kr 메인은 위 표의 키만 읽습니다.
+> 참고: `home.tracks`, `home.features`, `home.process`, `home.learn` 은 보조 사이트(newirumcompany, GitHub Pages)용 키입니다.
 
 ### 2-1b. 과정(기수) 관리 — 여러 과정을 동시에 운영할 때
 
-메인의 **히어로 슬라이드, 진행중·모집중 과정 카드, 과정별 상세 페이지**는 모두 "과정" 한 행(`site_programs`)에서 만들어집니다.
+메인의 **「모집 · 진행 중인 과정」 카드, 과정별 상세 페이지**는 모두 "과정" 한 행(`site_programs`)에서 만들어집니다.
 과정을 추가·종료해도 코드를 고칠 필요가 없고, 채팅으로 처리합니다.
 
 | 하고 싶은 일 | 이렇게 말하세요 |
@@ -94,7 +101,7 @@
 | 현재 과정 목록 | "등록된 과정 목록 보여줘" |
 | 새 과정 추가 | "새 과정 ○○를 비공개로 만들어줘. 일정은 ○○, 수강료 ○○원, 대상은 ○○" |
 | 공개 | "○○ 과정을 공개해줘" (처음엔 비공개로 만들고 확인 후 공개합니다) |
-| 히어로 슬라이드에 올리기/내리기 | "○○ 과정을 히어로에 올려줘" / "히어로에서 빼줘" |
+| (참고) 대표 과정 표시 `featured` | 2026-10-08 메인 재구성 이후 메인 화면에는 쓰이지 않습니다(히어로는 사진 + 카피). 값은 보관됩니다. |
 | 순서 바꾸기 | "히어로 순서를 ○○, ○○ 순으로 바꿔줘" |
 | 커리큘럼·FAQ 등 일부만 수정 | "○○ 과정 커리큘럼 3회차를 ○○로 바꿔줘" |
 | 신청 페이지(옵션·수강료) 만들기 | "○○ 과정에 신청 옵션 '일반 30만원', '회원 24만원'을 만들어줘" |
@@ -250,7 +257,7 @@
 
 수정 가능한 키:
 
-- 콘텐츠(irumcompany.co.kr): `home.hero`, `home.hero_meta`, `home.slides`, `home.highlights`, `home.cards`, `home.timeline`, `home.outcomes`, `home.system`, `home.instructor`, `home.metrics`, `home.enrollment`, `home.faq`
+- 콘텐츠(irumcompany.co.kr): `home.hero`, `home.hero_meta`, `home.hero_images`, `home.clients`, `home.cases`, `home.areas`, `home.metrics`, `home.insights`, `home.cta`, `home.instructor`, `home.faq` (옛 키 `home.slides` `home.highlights` `home.cards` `home.timeline` `home.outcomes` `home.system` `home.enrollment` 는 더 이상 사용 안 함)
 - 콘텐츠(보조 사이트): `home.tracks`, `home.features`, `home.process`
 - 설정: `seo`(탭 제목·설명), `nav`·`footer`(보조 사이트)
 
