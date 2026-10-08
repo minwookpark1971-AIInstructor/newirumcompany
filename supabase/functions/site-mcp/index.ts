@@ -10,7 +10,7 @@ import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-const SERVER_INFO = { name: "irum-site-editor", version: "1.2.0" };
+const SERVER_INFO = { name: "irum-site-editor", version: "1.3.0" };
 const INSTRUCTIONS =
   "이룸아카데미 사이트(메인 문구·프로그램·헤더/푸터 설정)와 신청/문의를 편집하는 서버입니다. " +
   "수정 전에는 get_content/list_courses 로 현재 값을 확인하고, 변경 후에는 결과 diff 를 사용자에게 알려주세요. " +
@@ -63,7 +63,7 @@ function checkHrefs(v: unknown) {
     else if (x && typeof x === "object") {
       for (const [k, y] of Object.entries(x)) {
         if (
-          k === "href" && typeof y === "string" &&
+          (k === "href" || k === "more_href") && typeof y === "string" &&
           ((/^[a-z][a-z0-9+.-]*:/i.test(y) && !/^https?:/i.test(y)) || y.startsWith("//"))
         ) {
           throw new ToolError(`href 는 상대경로 또는 http(s) 링크만 허용됩니다: ${y}`);
@@ -154,6 +154,43 @@ function validateHome(key: string, v: any, need: (cond: boolean, msg: string) =>
       need(v.account === undefined || (isStr(v.account?.bank) && isStr(v.account?.number) && isStr(v.account?.holder)), "account 에 bank,number,holder 가 필요합니다.");
       need(v.notice === undefined || (isArr(v.notice, 1, 8) && v.notice.every(isStr)), "notice 는 문자열 1~8개입니다.");
       break;
+    // ── 메인 재구성(2026-10-08): 히어로 사진·신뢰 로고·출강 사례·강의영역·인사이트·CTA ──
+    case "home.hero_images":
+      need(isArr(v?.items, 1, 5), "{items(1~5장)} 가 필요합니다.");
+      v.items.forEach((m: any, i: number) => need(isStr(m?.src) && optStr(m?.alt), `items[${i}] 에 src(상대경로/https)가 필요합니다.`));
+      break;
+    case "home.clients":
+      need(isArr(v?.items, 1, 30), "{items(1~30개)} 가 필요합니다.");
+      v.items.forEach((m: any, i: number) => need(isStr(m?.name) && optStr(m?.src) && optStr(m?.href), `items[${i}] 에 name 이 필요합니다(src, href 는 선택).`));
+      break;
+    case "home.cases":
+      need(isArr(v?.items, 1, 12), "{items(1~12개), more_href?} 가 필요합니다.");
+      need(optStr(v.more_href), "more_href 는 문자열입니다.");
+      v.items.forEach((m: any, i: number) => {
+        need(isStr(m?.title) && optStr(m?.image) && optStr(m?.href), `items[${i}] 에 title 이 필요합니다(image, href 는 선택).`);
+        need(m?.tags === undefined || (isArr(m.tags, 1, 2) && m.tags.every(isStr)), `items[${i}].tags 는 문자열 1~2개입니다.`);
+      });
+      break;
+    case "home.areas":
+      need(isArr(v?.items, 1, 6), "{items(1~6개)} 가 필요합니다.");
+      v.items.forEach((m: any, i: number) => {
+        need(isStr(m?.name), `items[${i}] 에 name 이 필요합니다.`);
+        need(["desc", "audience", "output"].every((f) => optStr(m?.[f])), `items[${i}] 의 desc,audience,output 은 문자열입니다.`);
+        need(m?.courses === undefined || (isArr(m.courses, 1, 3) && m.courses.every(isStr)), `items[${i}].courses 는 문자열 1~3개입니다.`);
+        need(m?.images === undefined || (isArr(m.images, 1, 3) && m.images.every((g: any) => isStr(g?.src) && optStr(g?.alt))), `items[${i}].images 는 {src,alt?} 1~3개입니다.`);
+      });
+      break;
+    case "home.insights":
+      need(isArr(v?.items, 1, 12), "{items(1~12개), more_href?} 가 필요합니다.");
+      need(optStr(v.more_href), "more_href 는 문자열입니다.");
+      v.items.forEach((m: any, i: number) => need(isStr(m?.title) && isStr(m?.href) && optStr(m?.tag) && optStr(m?.image), `items[${i}] 에 title, href 가 필요합니다(tag, image 는 선택).`));
+      break;
+    case "home.cta":
+      need(isStr(v?.title), "title 이 필요합니다.");
+      need(optStr(v.body), "body 는 문자열입니다.");
+      link(v.primary, "primary");
+      link(v.secondary, "secondary");
+      break;
     case "home.faq":
       need(isArr(v, 1, 20), "FAQ 는 1~20개(배열)입니다.");
       v.forEach((f: any, i: number) => need(isStr(f?.q) && isStr(f?.a), `faq[${i}] 에 q,a 가 필요합니다.`));
@@ -200,6 +237,11 @@ function validateKnown(table: string, key: string, v: any) {
         "cta_title,cta_description,email,address 가 필요합니다.",
       );
       need(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email), "email 형식이 올바르지 않습니다.");
+      need(v.kakao_url === undefined || /^https:\/\//i.test(v.kakao_url), "kakao_url 은 https 주소만 허용됩니다.");
+      need(
+        v.sns === undefined || (Array.isArray(v.sns) && v.sns.length <= 6 && v.sns.every((x: any) => isStr(x?.label) && /^https:\/\//i.test(x?.href ?? ""))),
+        "sns 는 {label, href(https)} 최대 6개입니다.",
+      );
     }
   }
 }
@@ -358,6 +400,8 @@ const tools: Tool[] = [
             "home.hero", "home.hero_meta", "home.slides", "home.highlights", "home.cards",
             "home.timeline", "home.outcomes", "home.system", "home.instructor", "home.metrics",
             "home.enrollment", "home.faq",
+            // 메인 재구성(2026-10-08)
+            "home.hero_images", "home.clients", "home.cases", "home.areas", "home.insights", "home.cta",
             // newirumcompany(보조 사이트) 전용
             "home.tracks", "home.features", "home.process",
           ],
@@ -389,8 +433,10 @@ const tools: Tool[] = [
       "home.highlights[문장], home.cards[{code,name,status,tone,tagline,desc,sessions,fee,output,cta,href}], " +
       "home.timeline{title,weeks[{no,date,title,body,milestone}]}, home.outcomes{title,items[{title,body}]}, home.system{title,rows[{k,v}]}, " +
       "home.instructor{name,role,bio[]}, home.metrics{items[{n,label}]}, home.enrollment{schedule,fees[{name,price,note}],account{bank,number,holder},notice[]}, " +
+      "home.hero_images{items[{src,alt}] 1~5장}, home.clients{items[{name,src,href}]}, home.cases{more_href,items[{title,image,tags[],href}]}, " +
+      "home.areas{items[{name,desc,audience,courses[],output,images[{src,alt}]}] 최대 6개}, home.insights{more_href,items[{title,tag,image,href}]}, home.cta{title,body,primary{label,href},secondary{label,href}}, " +
       "home.faq[{q,a}] (irumcompany.co.kr 메인), home.tracks[2], home.features{title,items[3]}, home.process{title,subtitle,steps[3]} (보조 사이트), " +
-      "settings: nav{items[],cta_label}, footer{cta_title,cta_description,email,address}, seo{title,description}. 줄바꿈은 \\n.",
+      "settings: nav{items[],cta_label}, footer{cta_title,cta_description,email,address,kakao_url?,sns?[{label,href}]}, seo{title,description}. 줄바꿈은 \\n.",
     inputSchema: {
       type: "object",
       properties: { table: { type: "string", enum: ["content", "settings"] }, key: { type: "string" }, value: {} },
