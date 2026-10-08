@@ -628,7 +628,7 @@ const tools: Tool[] = [
   {
     name: "list_programs",
     description:
-      "과정(기수) 카탈로그 목록(비공개 포함). 메인 히어로 슬라이드(featured)·진행중 과정 카드·상세 페이지의 원본. " +
+      "과정(기수) 카탈로그 목록(비공개 포함). 메인 「모집·진행 중인 과정」 카드·과정 상세 페이지의 원본. " +
       "slug 를 주면 detail 까지 전체, 생략하면 목록용 요약.",
     inputSchema: {
       type: "object",
@@ -655,7 +655,7 @@ const tools: Tool[] = [
     name: "upsert_program",
     description:
       "과정 추가/수정(slug 기준). 수정 시 보내지 않은 필드는 유지. 새 과정은 published=false 로 만들어 확인한 뒤 true 로 공개하세요. " +
-      "필드: kind(live|online|external), status(open|ongoing|upcoming|closed), published, featured(히어로 슬라이드 포함), hero_order, sort_order, " +
+      "필드: kind(live|online|external), status(open|ongoing|upcoming|closed), published, featured·hero_order(대표 과정 표시 — 2026-10-08 메인 재구성 이후 메인에서는 쓰이지 않음), sort_order(카드 순서), " +
       "title, subtitle, summary, badge, tags[], start_date/end_date(YYYY-MM-DD), schedule_label, format_label, duration_label, price_label, host_label, " +
       "audience_label, location_label, late_join, poster/poster_alt/thumb(상대경로 또는 https), apply_mode(internal|external), apply_course_slug, " +
       "external_url(https), source_name, checked_at, detail{...}. detail 은 통째 교체되므로 일부만 바꿀 때는 set_program_detail 을 쓰세요. " +
@@ -837,7 +837,7 @@ const tools: Tool[] = [
   },
   {
     name: "set_program_order",
-    description: "과정 노출 순서를 일괄 지정. items: [{slug, sort_order?, hero_order?}] (작은 숫자가 앞). 목록 카드는 sort_order, 히어로 슬라이드는 hero_order.",
+    description: "과정 노출 순서를 일괄 지정. items: [{slug, sort_order?, hero_order?}] (작은 숫자가 앞). 목록 카드 순서는 sort_order(hero_order 는 현재 쓰이지 않음).",
     inputSchema: {
       type: "object",
       properties: {
@@ -867,7 +867,7 @@ const tools: Tool[] = [
   {
     name: "close_program",
     description:
-      "과정을 마감(status=closed)하고 히어로·진행중 목록에서 내린다. hide=true 면 비공개(published=false)까지. " +
+      "과정을 마감(status=closed)하고 진행중·모집중 목록에서 내린다. hide=true 면 비공개(published=false)까지. " +
       "신청 페이지의 연결 과정(courses)도 함께 마감하려면 close_apply=true. 삭제는 하지 않는다.",
     inputSchema: {
       type: "object",
