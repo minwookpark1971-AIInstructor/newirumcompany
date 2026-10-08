@@ -10,7 +10,7 @@ import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-const SERVER_INFO = { name: "irum-site-editor", version: "1.0.0" };
+const SERVER_INFO = { name: "irum-site-editor", version: "1.1.0" };
 const INSTRUCTIONS =
   "이룸아카데미 사이트(메인 문구·프로그램·헤더/푸터 설정)와 신청/문의를 편집하는 서버입니다. " +
   "수정 전에는 get_content/list_courses 로 현재 값을 확인하고, 변경 후에는 결과 diff 를 사용자에게 알려주세요. " +
@@ -74,12 +74,99 @@ function checkHrefs(v: unknown) {
   walk(v);
 }
 
+/** 이미지·소스 주소: 상대 경로 또는 https 만 허용 (http:, //, javascript: 등 거부) */
+function checkImages(v: unknown) {
+  const walk = (x: any) => {
+    if (Array.isArray(x)) x.forEach(walk);
+    else if (x && typeof x === "object") {
+      for (const [k, y] of Object.entries(x)) {
+        if (
+          (k === "image" || k === "src") && typeof y === "string" &&
+          ((/^[a-z][a-z0-9+.-]*:/i.test(y) && !/^https:/i.test(y)) || y.startsWith("//"))
+        ) {
+          throw new ToolError(`${k} 는 상대경로 또는 https 주소만 허용됩니다: ${y}`);
+        }
+        walk(y);
+      }
+    }
+  };
+  walk(v);
+}
+
+/** irumacademy 메인(home.*) 신규 키 검증. 선택 항목은 없어도 되지만 있으면 문자열이어야 한다. */
+function validateHome(key: string, v: any, need: (cond: boolean, msg: string) => void) {
+  const isArr = (x: unknown, min: number, max: number) => Array.isArray(x) && x.length >= min && x.length <= max;
+  const optStr = (x: unknown) => x === undefined || typeof x === "string";
+  const link = (x: any, p: string) => {
+    if (x === undefined) return;
+    need(!!x && isStr(x.label) && isStr(x.href), `${p} 에 label, href 가 필요합니다.`);
+  };
+  switch (key) {
+    case "home.hero_meta":
+      need(v && typeof v === "object", "객체가 필요합니다.");
+      need(v.tags === undefined || (isArr(v.tags, 1, 8) && v.tags.every(isStr)), "tags 는 문자열 1~8개입니다.");
+      link(v.cta1, "cta1");
+      link(v.cta2, "cta2");
+      break;
+    case "home.slides":
+      need(isArr(v, 1, 6), "슬라이드는 1~6개(배열)입니다.");
+      v.forEach((s: any, i: number) => {
+        need(isStr(s?.title), `slides[${i}] 에 title 이 필요합니다.`);
+        need(["label", "desc", "image", "alt", "href", "cta"].every((f) => optStr(s?.[f])), `slides[${i}] 의 label,desc,image,alt,href,cta 는 문자열입니다.`);
+      });
+      break;
+    case "home.highlights":
+      need(isArr(v, 1, 8) && v.every(isStr), "핵심 문장은 문자열 1~8개(배열)입니다.");
+      break;
+    case "home.cards":
+      need(isArr(v, 1, 4), "트랙 카드는 1~4개(배열)입니다.");
+      v.forEach((c: any, i: number) => {
+        need(isStr(c?.name), `cards[${i}] 에 name 이 필요합니다.`);
+        need(["code", "status", "tagline", "desc", "sessions", "fee", "output", "cta", "href"].every((f) => optStr(c?.[f])), `cards[${i}] 의 값은 문자열입니다.`);
+        need(c?.tone === undefined || ["live", "open", "closed"].includes(c.tone), `cards[${i}].tone 은 live|open|closed 입니다.`);
+      });
+      break;
+    case "home.timeline":
+      need(isArr(v?.weeks, 1, 24), "{title?, weeks(1~24개)} 가 필요합니다.");
+      v.weeks.forEach((w: any, i: number) => need(isStr(w?.no) && isStr(w?.date) && isStr(w?.title), `weeks[${i}] 에 no,date,title 이 필요합니다.`));
+      break;
+    case "home.outcomes":
+      need(isArr(v?.items, 1, 6), "{title, items(1~6개)} 가 필요합니다.");
+      v.items.forEach((t: any, i: number) => need(isStr(t?.title) && isStr(t?.body), `items[${i}] 에 title,body 가 필요합니다.`));
+      break;
+    case "home.system":
+      need(isArr(v?.rows, 1, 12), "{title?, rows(1~12개)} 가 필요합니다.");
+      v.rows.forEach((r: any, i: number) => need(isStr(r?.k) && isStr(r?.v), `rows[${i}] 에 k,v 가 필요합니다.`));
+      break;
+    case "home.instructor":
+      need(isStr(v?.name), "name 이 필요합니다.");
+      need(v.bio === undefined || (isArr(v.bio, 1, 12) && v.bio.every(isStr)), "bio 는 문자열 배열입니다.");
+      break;
+    case "home.metrics":
+      need(isArr(v?.items, 1, 4), "{items(1~4개)} 가 필요합니다.");
+      v.items.forEach((m: any, i: number) => need(isStr(m?.n) && isStr(m?.label), `items[${i}] 에 n,label 이 필요합니다.`));
+      break;
+    case "home.enrollment":
+      need(v && typeof v === "object", "객체가 필요합니다.");
+      need(v.fees === undefined || isArr(v.fees, 1, 8), "fees 는 1~8개입니다.");
+      (v.fees ?? []).forEach((f: any, i: number) => need(isStr(f?.name) && isStr(f?.price), `fees[${i}] 에 name,price 가 필요합니다.`));
+      need(v.account === undefined || (isStr(v.account?.bank) && isStr(v.account?.number) && isStr(v.account?.holder)), "account 에 bank,number,holder 가 필요합니다.");
+      need(v.notice === undefined || (isArr(v.notice, 1, 8) && v.notice.every(isStr)), "notice 는 문자열 1~8개입니다.");
+      break;
+    case "home.faq":
+      need(isArr(v, 1, 20), "FAQ 는 1~20개(배열)입니다.");
+      v.forEach((f: any, i: number) => need(isStr(f?.q) && isStr(f?.a), `faq[${i}] 에 q,a 가 필요합니다.`));
+      break;
+  }
+}
+
 /** 알려진 키는 모양을 검증한다. 모르는 키는 통과(프론트가 읽을 때까지 영향 없음). */
 function validateKnown(table: string, key: string, v: any) {
   const need = (cond: boolean, msg: string) => {
     if (!cond) throw new ToolError(`${table}/${key}: ${msg}`);
   };
   if (table === "site_content") {
+    validateHome(key, v, need);
     if (key === "home.hero") {
       need(isStr(v?.title) && isStr(v?.subtitle), "{title, subtitle} 문자열이 필요합니다.");
     } else if (key === "home.tracks") {
@@ -98,7 +185,11 @@ function validateKnown(table: string, key: string, v: any) {
       v.steps.forEach((t: any, i: number) => need(isStr(t?.title) && isStr(t?.body), `steps[${i}] 에 title,body 가 필요합니다.`));
     }
   } else if (table === "site_settings") {
-    if (key === "nav") {
+    if (key === "seo") {
+      need(isStr(v?.title) || isStr(v?.description), "title 또는 description 이 필요합니다.");
+      need(v.title === undefined || typeof v.title === "string", "title 은 문자열입니다.");
+      need(v.description === undefined || typeof v.description === "string", "description 은 문자열입니다.");
+    } else if (key === "nav") {
       need(Array.isArray(v?.items) && v.items.length >= 1 && v.items.length <= 6, "{items(1~6개), cta_label} 가 필요합니다.");
       v.items.forEach((t: any, i: number) => need(isStr(t?.label) && isStr(t?.href), `items[${i}] 에 label,href 가 필요합니다.`));
       need(isStr(v?.cta_label), "cta_label 이 필요합니다.");
@@ -156,8 +247,14 @@ const tools: Tool[] = [
         new_applications: a.count,
         new_inquiries: i.count,
         known_keys: {
-          content: ["home.hero", "home.tracks", "home.features", "home.process"],
-          settings: ["nav", "footer"],
+          content: [
+            "home.hero", "home.hero_meta", "home.slides", "home.highlights", "home.cards",
+            "home.timeline", "home.outcomes", "home.system", "home.instructor", "home.metrics",
+            "home.enrollment", "home.faq",
+            // newirumcompany(보조 사이트) 전용
+            "home.tracks", "home.features", "home.process",
+          ],
+          settings: ["nav", "footer", "seo"],
         },
       });
     },
@@ -181,8 +278,12 @@ const tools: Tool[] = [
     name: "set_content",
     description:
       "메인 문구/설정 값을 교체(전체 value 를 보내야 함 — 먼저 get_content 로 현재 값 확인). " +
-      "home.hero{title,subtitle}, home.tracks[2], home.features{title,items[3]}, home.process{title,subtitle,steps[3]}, " +
-      "settings: nav{items[],cta_label}, footer{cta_title,cta_description,email,address}. 줄바꿈은 \\n.",
+      "home.hero{title,subtitle}, home.hero_meta{tags[],cta1{label,href},cta2}, home.slides[{label,title,desc,image,alt,href,cta}], " +
+      "home.highlights[문장], home.cards[{code,name,status,tone,tagline,desc,sessions,fee,output,cta,href}], " +
+      "home.timeline{title,weeks[{no,date,title,body,milestone}]}, home.outcomes{title,items[{title,body}]}, home.system{title,rows[{k,v}]}, " +
+      "home.instructor{name,role,bio[]}, home.metrics{items[{n,label}]}, home.enrollment{schedule,fees[{name,price,note}],account{bank,number,holder},notice[]}, " +
+      "home.faq[{q,a}] (irumcompany.co.kr 메인), home.tracks[2], home.features{title,items[3]}, home.process{title,subtitle,steps[3]} (보조 사이트), " +
+      "settings: nav{items[],cta_label}, footer{cta_title,cta_description,email,address}, seo{title,description}. 줄바꿈은 \\n.",
     inputSchema: {
       type: "object",
       properties: { table: { type: "string", enum: ["content", "settings"] }, key: { type: "string" }, value: {} },
@@ -194,6 +295,7 @@ const tools: Tool[] = [
       assertSize(a.value);
       assertSafeStrings(a.value);
       checkHrefs(a.value);
+      checkImages(a.value);
       validateKnown(table, a.key, a.value);
       const { data: before } = await db.from(table).select("value").eq("key", a.key).maybeSingle();
       const { error } = await db.from(table).upsert({ key: a.key, value: a.value });
